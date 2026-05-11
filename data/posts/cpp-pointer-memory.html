@@ -1,0 +1,293 @@
+<h2 id="写在前面">写在前面</h2>
+
+<blockquote><p>本文旨在帮助大一上学期 “程序设计(1)” 中C语言指针与内存管理没完全理解的同学，在大一下学期的C++里学会指针与内存管理<br></p></blockquote>
+<blockquote><p>受限于篇幅限制，本文某些时候可能会直接使用C++里的一些语法，而不会使用C语言的语法，比如可能会使用<code>new</code>、<code>delete</code>而不是<code>malloc</code>、<code>free</code><br></p></blockquote>
+<blockquote><p>如有任何问题或错误，欢迎使用个人主页的联系方式联系我，也可以评论留言（需登录GitHub）</p></blockquote>
+
+<blockquote><p>[!CAUTION]</p></blockquote>
+<blockquote><p>如果大家感觉一看到这部分就害怕、头疼，没关系，作者向你承诺这篇文章绝对<strong>非常生动形象</strong>，你一定可以很轻松的看懂！</p></blockquote>
+
+<blockquote><p>[!NOTE]</p></blockquote>
+<blockquote><p>本文为了方便大家理解，某些表述方法或比喻可能不够精确，如有建议，欢迎与我联系、讨论！</p></blockquote>
+
+<blockquote><p>[!TIP]</p></blockquote>
+<blockquote><p>如何判断自己是否真正掌握了C语言的指针？</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>看看自己能不能回答以下问题：</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>1. 定义<code>int a[i]</code>，<code>a[i]</code>与<code>i[a]</code>、<code>(i+1)[a-1]</code>为什么是等价的？</p></blockquote>
+<blockquote><p>2. 定义<code>int a[10][20]</code>，传入这个二维数组的时候，为什么传入<code>int a[][20]</code>可以，而传入<code>int a[10][]</code>就不可以？（需要知道具体为什么不可以）</p></blockquote>
+<blockquote><p>3. 定义<code>int a[10][20]</code>，a是什么类型？a[2]是什么类型？<br><br></p></blockquote>
+<blockquote><p>   如果你无法回答上面的全部问题，那么说明你还没完全理解透彻！</p></blockquote>
+
+<h1>第一节 指针</h1>
+
+<h2 id="外卖柜">外卖柜</h2>
+
+想象一下，你今天中午要去拿外卖。我们如何保证你能准确的拿到自己的外卖呢？<br>
+我们需要知道：你的外卖放在哪个格子里
+
+<h2 id="计算机中的外卖柜">计算机中的外卖柜</h2>
+
+好了，我们现在来类比一下<br>
+我们如何在计算机中描述一个数据存储的位置呢？<br>
+首先我们要知道，计算机中不同的类型占用的内存是不同的，比如，大部分情况下<code>char</code>占用1个字节，<code>int</code>4个，<code>long long</code>8个。很多时候，我们可能要连续使用好几个外卖柜的格子才能取到外卖<br>
+<br>
+所以我们想准确描述一个变量在计算机中的存储地址，就需要知道：
+
+- 数据从哪里开始存放 （第一个外卖在哪）
+- 数据存了多长 （连续放了几个外卖格子）
+
+<h2 id="指针到底是怎么取到外卖的">指针到底是怎么取到外卖的</h2>
+
+首先，我们定义一个指针
+
+<pre><code class="language-cpp">int a;
+int* p = &amp;a;
+*p = 3;
+</code></pre>
+
+先简单讲解一下基本语法。
+
+- 我们首先定义了一个变量<code>a</code>
+- 然后定义了一个整型指针变量（<code>int*</code>类型）<code>p</code>
+- 接着对a进行取址<code>&</code>，把<code>a</code>的地址给<code>p</code>
+- 最后我们对<code>p</code>进行<strong>解引用<code>*</code></strong>，解引用就是找到这个地址对应的东西，<code>*p = 3;</code>也就是让<code>p</code>地址对应的东西（也就是<code>a</code>）的值变成3
+
+<blockquote><p>[!CAUTION]</p></blockquote>
+<blockquote><p>注意，<code>int* p;</code>和<code>*p = 5;</code>，这两个<code>*p</code>虽然长得差不多，但是有本质不同！<code>int* p</code>的<code>*</code>可以理解为是跟着前面的<code>int</code>的，意思是定义了一个类型是<code>int*</code>（整型指针类型）的变量<code>p</code>，而<code>*p = 5;</code>的<code>*</code>是上面提到的<strong>解引用</strong>，是找到这个地址对应的东西</p></blockquote>
+
+<h3 id="那么，指针变量<code>p</code>到底是怎么工作的？">那么，指针变量<code>p</code>到底是怎么工作的？</h3>
+
+我们把计算机内存里的一个字节看作是一个小格子
+
+- <code>p</code>里存放的值就是<code>a</code>在计算机内存里的第一个小格子的编号，也就是起始地址（一般来说作为<code>int</code>类型的<code>a</code>会占4个字节） -> 对应第一个外卖格子的编号
+- 那么，谁来记录数据的长度，也就是连续存了几个格子呢？其实这个长度信息存在了指针的类型里。<code>int*</code>类型的指针，它用它的类型<code>int*</code>隐含了“连续存了4个格子”的信息。
+- 同样的，<code>long long *</code>隐含了“连续存了8个格子”的信息、<code>char*</code>隐含了“只存放了1个格子”的信息
+
+_好了，至此，指针的基础部分就结束了_
+
+<h1>第二节 数组与指针</h1>
+
+<h2 id="申请一块连续的空间">申请一块连续的空间</h2>
+
+<h3 id="new与delete">new与delete</h3>
+
+- 可以理解为<code>new</code>是在贷款，<code>delete</code>是在还款，你不能一直贷款而从不还款
+- 所以，<code>new</code>申请出来的内存一定在使用完后应该使用<code>delete</code>即使还清
+
+<h4 id="基本语法：">基本语法：</h4>
+
+- 申请单个类型为<code>T</code>的变量的内存：<code>new T</code>
+- 删除指针变量<code>p</code>指向的单个内存：<code>delete p</code>
+
+- 申请连续<code>n</code>个类型为<code>T</code>的变量的内存：<code>new T[n]</code>
+- 删除指针变量<code>p</code>指向的一片连续内存：<code>delete[] p</code>
+
+<h3 id="数组与指针">数组与指针</h3>
+
+<pre><code class="language-cpp">int a[100];
+
+int* p;
+p = new int[100];
+</code></pre>
+
+这两种写法的区别是什么？
+
+- <code>int a[100];</code>：在内存里用一块连续的空间（100个int就是100\*4），存了100个int数据，把第一个数据的地址存在了<code>a</code>里，<code>a</code>就是一个指针，<code>a</code>这个指针的值是不能修改的，一旦修改，数组名 <code>a</code> 的地址将不能代表原先的连续存储，从而导致后续元素丢失/错误访问，后面的数全都丢了
+- <code>int* p</code>：定义了一个整型指针变量<code>p</code>。这个<code>p</code>是你自己的，你想怎么用怎么用。<code>p = new int[100];</code>：在内存中申请了一块连续的空间，大小是100个int（100\*4），把这个空间的第一个<code>int</code>的地址赋值给了<code>p</code>
+
+<h2 id="指针的+与-">指针的+与-</h2>
+
+有些抽象一点是，指针可以<code>++</code>、<code>--</code>、<code>+=5</code>、<code>-=6</code><br>
+意思是：在当前位置 向左（-）/向右（+） 移动几个大单位<br>
+比如一个<code>long long*</code>类型的<code>p</code>，<code>p++</code>就会往右移动一个<code>long long</code>占用的整个空间（也就是大多数情况下的8个字节），同理，<code>int*</code>的<code>p</code>，<code>p -= 2</code>就会往左移动两个元素（通常为 2 × 4 = 8 字节）
+
+<h2 id="解密 a[i]">解密 a[i]</h2>
+
+那么对于一个数组<code>int a[100]</code>,<code>a[i]</code>是什么呢？<br><br>
+其实很简单,<code>a[i]</code>本质上就是<code>*(a + i)</code><br>
+<code>a[i]</code>在使用的时候，会先计算<code>a + i</code>，给指针<code>a</code>（记录着整个数组的起始元素的地址）向后偏移<code>i</code>位，然后解引用，找出第0位的地址往后i位的地址存储的数据，就巧妙地实现了<code>a[i]</code>能访问数组<code>a</code>第<code>i</code>项的功能
+
+所以：
+
+- <code>a[i]</code> -> <code>*(a + i)</code>
+- <code>i[a]</code> -> <code>*(i + a)</code> -> <code>*(a + i)</code>
+- <code>(i+1)[a-1]</code> -> <code>*(i + 1 + a - 1)</code> -> <code>*(a + i)</code>
+  所以说这三个写法等价
+
+<h2 id="更高维的数组">更高维的数组</h2>
+
+刚刚我们使用了一维的数组，现在我们来试试二维<br>
+很多同学觉得二维数组是一个“方阵”，像 Excel 表格一样。但在电脑的底层，<strong>内存是一条笔直的走廊</strong>。<br>
+定义 <code>int a[10][20]</code>，本质上是你租下了 <strong>200 个连续的房间</strong>（$10 \times 20$）。
+
+<h3 id="1. 为什么 a[ ][20] 行，a[10][ ] 不行？">1. 为什么 a[ ][20] 行，a[10][ ] 不行？</h3>
+
+想象你是一个导游，要带游客去 <code>a[3][5]</code>（第 4 层，第 6 个房间）。<br>
+由于房间全是连着的，你必须通过<strong>数学计算</strong>算出这是走廊里的第几个房间：
+
+<blockquote><p>[!NOTE]</p></blockquote>
+<blockquote><p><strong>定位公式：</strong> 跳过的层数 × <strong>每层房间数</strong> + 目标层内的偏移量</p></blockquote>
+
+- <strong>如果你知道每层有 20 个房间：</strong>
+  去 <code>a[3][5]</code> = 走廊第 $(3 \times 20) + 5 = 65$ 个房间。计算机可以轻松计算出正确的位置
+- <strong>如果你不知道每层有几个（即 <code>a[10][]</code>）：</strong>
+  去 <code>a[3][5]</code> = 走廊第 $(3 \times \text{?}) + 5$ 个房间。<br>
+  人类很容易能看懂，但计算机没有层的概念，所以它报错：<code>array has incomplete element type（数组含有不完整类型的元素）</code>，要你告诉它一层到底有几个房间
+
+<strong>结论：</strong>
+传参时，<strong>第二维（列数）绝对不能省</strong>。它是电脑计算地址的“步长”。至于总共有多少层（第一维），电脑并不关心，它只要知道每层多宽，就能顺着走廊摸过去。
+
+<hr>
+<h3 id="2. a 是什么类型？ a[2] 是什么类型？">2. a 是什么类型？ a[2] 是什么类型？</h3>
+
+我们用“身份等级”来理解这两个符号：
+
+<h4 id="<strong><code>a</code> 的身份：高级主管（指向“整行”的指针）</strong>"><strong><code>a</code> 的身份：高级主管（指向“整行”的指针）</strong></h4>
+
+- <strong>含义：</strong> 它代表的是“整栋楼”的起始点。
+- <strong>特殊能力：</strong> 如果你执行 <code>a + 1</code>，它会非常有排场地直接跳过 <strong>20 个房间</strong>（一整行）。
+- <strong>专业术语：</strong> 它的类型是 <code>int (*)[20]</code>，即<strong>数组指针</strong>。它手里拿着的是“某一层”的钥匙。
+
+<h4 id="<strong><code>a[2]</code> 的身份：楼层经理（指向“单个房间”的指针）</strong>"><strong><code>a[2]</code> 的身份：楼层经理（指向“单个房间”的指针）</strong></h4>
+
+- <strong>含义：</strong> 当你写出 <code>a[2]</code> 时，说明你已经进到了第 3 层楼的走廊里。
+- <strong>特殊能力：</strong> 如果你执行 <code>a[2] + 1</code>，它只会小心翼翼地挪动 <strong>1 个房间</strong>（一个 <code>int</code>）。
+- <strong>专业术语：</strong> 它的类型是 <code>int *</code>。它手里拿着的是“具体某个房间”的钥匙。
+
+<h3 id="总结">总结</h3>
+
+<blockquote><p>“二维数组传参时，必须交出‘每层宽度’的地图；<code>a</code> 看的是‘层’，<code>a[i]</code> 看的是‘间’。”</p></blockquote>
+
+<hr>
+<h3 id="动态造楼：手动申请二维数组">动态造楼：手动申请二维数组</h3>
+
+有时候我们不确定数组到底要多大，这时候就需要用到 <code>new</code> 来动态申请。这就像是在内存走廊里“按需盖房”。
+
+<h4 id="1. 第一步：申请“楼层索引”">1. 第一步：申请“楼层索引”</h4>
+
+我们需要先申请一个能存放 <strong>100 个指针</strong> 的数组。
+
+<pre><code class="language-cpp">int** p = new int*[100];
+</code></pre>
+
+<h4 id="2. 第二步：给每一层“盖房间”">2. 第二步：给每一层“盖房间”</h4>
+
+<pre><code class="language-cpp">for (int i = 0; i &lt; 100; ++i) {
+    p[i] = new int[20]; // 每一层申请 20 个 int 空间
+}
+</code></pre>
+
+- 发生了什么： 循环结束后，你拥有了 $100 \times 20$ 个房间。
+- 注意： 这里的每一层在内存中是连续的，但层与层之间在内存里可能是不连续的！这和 int a[100][20] 这种“一整块”的申请方式有本质区别。
+
+<h4 id="3. 第三步：记得“拆迁”（释放内存）">3. 第三步：记得“拆迁”（释放内存）</h4>
+
+动态申请的内存，编译器不会帮你自动回收。怎么盖的，就要倒着怎么拆。
+
+<pre><code class="language-cpp">// 1. 先拆每一层的房间
+for (int i = 0; i &lt; 100; ++i) {
+    delete[] p[i];
+}
+
+// 2. 再拆楼层索引表
+delete[] p;
+</code></pre>
+
+<blockquote><p>[!CAUTION]</p></blockquote>
+<blockquote><p>防坑指南： 如果你直接 <code>delete[] p;</code>，那么除第0层外，另外 99 层楼的房间就会变成“幽灵房”永远留在内存里，造成内存泄漏。</p></blockquote>
+<blockquote><p>因为这种动态的申请，只有每一层里的内存是连续的，各层和各层之间是不同批次调用的<code>new</code>，所以内存并不一定是连续的！</p></blockquote>
+
+<h3 id="深度对比：静态 VS 动态二维数组">深度对比：静态 VS 动态二维数组</h3>
+
+理解了“手动盖楼”的过程后，我们来看看这两种方式在内存里的本质区别：
+
+| 特性           | <strong>静态数组</strong> <code>int a[100][20]</code>      | <strong>动态数组</strong> <code>int** p</code>                         |
+| :------------- | :--------------------------------- | :--------------------------------------------- |
+| <strong>分配位置</strong>   | <strong>栈区 (Stack)</strong> 或全局区          | <strong>堆区 (Heap)</strong>                                |
+| <strong>内存连贯性</strong> | <strong>绝对连续</strong>（像一条笔直的长走廊） | <strong>行内连续，行间不一定</strong>（像散落在城里的公寓） |
+| <strong>灵活性</strong>     | 大小在编译时就得定死，不能改       | 运行到一半想盖多少盖多少，甚至每行长度能不同   |
+| <strong>生命周期</strong>   | 函数结束自动回收，省心             | 必须手动 <code>delete[]</code>，否则会<strong>内存泄漏</strong>        |
+| <strong>访问速度</strong>   | 极快（只需一次地址计算）           | 略慢（需要先找索引表，再跳到目标行）           |
+
+<hr>
+<h3 id="为什么程序员要折腾 int\*\* ？">为什么程序员要折腾 int\*\* ？</h3>
+
+虽然静态数组 <code>a[100][20]</code> 用起来简单，但它有两个致命弱点：
+
+1. <strong>栈溢出：</strong> 栈区的空间通常很小（通常只有 1MB~8MB），如果你开一个 <code>a[1000][1000]</code> 的大数组，程序会直接崩溃。
+2. <strong>无法变通：</strong> 如果你写一个处理图片的程序，用户上传 100x100 的图和 4K 的图，静态数组就没法应付了。
+
+<strong>掌握了 <code>int</strong></code> 的动态申请，才算真正拿到了 C++ 自由分配内存的“绿卡”。\*\*
+
+<h3 id="延伸：不要被“指针数组”给骗了！">延伸：不要被“指针数组”给骗了！</h3>
+
+在学习指针时，你会遇到两个长得很像的东西：
+
+1.  <strong>数组指针（<code>int (*p)[20]</code>）：</strong>
+    - <strong>像“大巴车”：</strong> 只有一辆车（一个指针），但车里规定必须坐 20 个人。它指向的是“一整行”。
+2.  <strong>指针数组（<code>int *p[20]</code>）：</strong>
+    - <strong>像“停车场”：</strong> 这里有 20 个车位（一个数组），<strong>每个车位里都停了一辆独立的小轿车</strong>（20 个独立的指针）。每个指针可以指向天南地北。
+
+<h3 id="更更高维的数组 与 更更更高维的数组：">更更高维的数组 与 更更更高维的数组：</h3>
+
+<pre><code class="language-cpp">int a[10][10][10];
+int a[10][10][10][10];
+</code></pre>
+
+这些与二维数组本质没有区别，就是反复套娃就好了，目前暂时不会过多考察，限于篇幅，暂时不做展开
+
+<h2 id="避免“野指针”！">避免“野指针”！</h2>
+
+<strong>定义了一个指针，不初始化就访问是绝对禁止的</strong>
+
+<pre><code class="language-cpp">int *p;   // 危险！这是野指针，它指向的地址是随机的
+*p = 100; // 极大概率导致程序崩溃（Segmentation Fault）
+</code></pre>
+
+<h1>扩展内容</h1>
+
+<h3 id="1. NULL与nullptr">1. NULL与nullptr</h3>
+
+在老版本的 C/C++ 中，我们习惯用 <code>NULL</code> 来表示“空指针”。但本质上，<code>NULL</code> 只是一个被强转为指针的 <strong>0</strong>。
+
+- <strong>危险点：</strong> 因为 <code>NULL</code> 本质是 0，有时候编译器会把它误认为是 <code>int</code> 类型，导致函数重载时调错方向。
+- <strong>新规矩（C++11）：</strong> 全面使用 <code>nullptr</code>。
+  - <code>nullptr</code> 是专门为指针设计的“空”。
+  - 它不能被当成整数 0，安全性更高。
+
+<hr>
+<h3 id="2. const 与 \* 的纠缠">2. const 与 \* 的纠缠</h3>
+
+看到 <code>const int *p</code> 和 <code>int * const p</code> ，看似长得一样，实则大有不同
+
+<strong>以 <code>*</code> 为界，看 <code>const</code> 在哪边：</strong>
+
+<h4 id="<strong>① <code>const</code> 在 <code>*</code> 左边：锁住的是“内容”</strong>"><strong>① <code>const</code> 在 <code>*</code> 左边：锁住的是“内容”</strong></h4>
+
+<code>const int *p = &a;</code>
+
+- <strong>解释：</strong> <code>const</code> 修饰的是 <code>int</code>（内容）。
+- <strong>结果：</strong> 你不能通过 <code>p</code> 去改 <code>a</code> 的值（<code>*p = 10</code> ❌），但你可以让 <code>p</code> 指向别的变量（<code>p = &b</code> ✅）。
+- <strong>类比：</strong> 你有一把万能钥匙，但这把钥匙只能看，不能动屋里的东西。
+
+<h4 id="<strong>② <code>const</code> 在 <code>*</code> 右边：锁住的是“指向”</strong>"><strong>② <code>const</code> 在 <code>*</code> 右边：锁住的是“指向”</strong></h4>
+
+<code>int * const p = &a;</code>
+
+- <strong>解释：</strong> <code>const</code> 修饰的是 <code>p</code> 本身（指针变量）。
+- <strong>结果：</strong> 你可以通过 <code>p</code> 改 <code>a</code> 的值（<code>*p = 10</code> ✅），但你这辈子只能指向 <code>a</code> 了（<code>p = &b</code> ❌）。
+- <strong>类比：</strong> 你的钥匙被焊死在 <code>a</code> 家的锁孔里了，虽然能开门改装修，但拔不出来去开别家的门。
+
+<h4 id="<strong>③ 两边都有：双重锁死</strong>"><strong>③ 两边都有：双重锁死</strong></h4>
+
+<code>const int * const p = &a;</code>
+
+- <strong>结果：</strong> 内容不能改，指向也不能改。
+
+<blockquote><p>[!NOTE]</p></blockquote>
+<blockquote><p>到这里，指针和内存管理的基础就基本结束了<br></p></blockquote>
+<blockquote><p>希望这些可以帮助大家更好的学习程序设计<br></p></blockquote>
+<blockquote><p>会了这些，才能真正理解接下来C++中<code>类的基础部分</code>里为什么要写<code>拷贝构造函数</code> <code>拷贝赋值运算符</code> <code>析构函数</code><br></p></blockquote>
+<blockquote><p>加油！</p></blockquote>

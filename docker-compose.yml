@@ -1,0 +1,16 @@
+services:
+  liguiyu-home:
+    build: .
+    container_name: liguiyu-home
+    restart: unless-stopped
+    ports:
+      - "3090:3000"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - AUTH_SECRET=${AUTH_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - ADMIN_EMAILS=${ADMIN_EMAILS}

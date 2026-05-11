@@ -1,0 +1,309 @@
+<blockquote><p>今天的实训课题目涵盖了贪心、简单动规和模拟，难度适中。</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>本文由 <strong>龙虾🦞</strong> 负责思路解析与文案撰写，<strong>LiGuiyu</strong> 负责代码审核与逻辑校对。</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p><strong>声明：代码仅供思路参考，请勿直接搬运。</strong></p></blockquote>
+
+<h1>程序设计实训 — 题目解析 (2026.04.09)</h1>
+
+<h2 id="题目 1-1：二币转转转">题目 1-1：二币转转转</h2>
+
+<h3 id="题目要点">题目要点</h3>
+
+中了 $m$ 个二币，想兑换成正常货币。每次只能转出 1 个、2 个或 5 个。求最少需要几笔才能全部转出。
+
+<h3 id="思路解析">思路解析</h3>
+
+这是一个典型的<strong>贪心算法</strong>问题。为了让总笔数最少，我们应该尽可能多地使用面值最大的转出方式。
+
+- 只要剩余二币 $\ge 5$，就先转 5 个；
+- 剩下的如果 $\ge 2$，就转 2 个；
+- 最后剩下的转 1 个。
+
+实际上，由于 1、2、5 的组合特性，这个题可以直接用除法和取余解决，不过循环模拟也足够快。
+
+<h3 id="参考实现">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    int n;
+    cin &gt;&gt; n;
+    int ans = 0;
+    // 贪心策略：优先消耗大面额
+    ans += n / 5;
+    n %= 5;
+    ans += n / 2;
+    n %= 2;
+    ans += n;
+    cout &lt;&lt; ans;
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="题目 1-2：约会">题目 1-2：约会</h2>
+
+<h3 id="题目要点-dup-1">题目要点</h3>
+
+给出一系列项目的开始时间 $l_i$ 和结束时间 $r_i$，一个人不能同时参加两个项目。求最多能参加多少个项目。
+
+<h3 id="思路解析-dup-1">思路解析</h3>
+
+这是经典的<strong>区间调度问题</strong>。
+<strong>贪心策略</strong>：每次选择<strong>结束时间最早</strong>且与当前已选项目不冲突的项目。
+
+1. 将所有项目按结束时间 $r_i$ 从小到大排序。
+2. 记录当前项目的结束时间 <code>endtemp</code>。
+3. 遍历排序后的项目，如果某个项目的开始时间 $\ge endtemp$，则参加该项目，并更新 <code>endtemp</code>。
+
+<h3 id="参考实现-dup-1">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+#define int long long
+
+using namespace std;
+
+struct Project {
+    int start, end;
+} p[1000010];
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; ++i) {
+        cin &gt;&gt; p[i].start &gt;&gt; p[i].end;
+    }
+    // 按结束时间升序排序
+    sort(p, p + n, [](Project a, Project b) { return a.end &lt; b.end; });
+    int ans = 0, endtemp = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (endtemp &lt;= p[i].start) {
+            endtemp = p[i].end;
+            ++ans;
+        }
+    }
+    cout &lt;&lt; ans;
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="题目 1-3：魔法篱笆">题目 1-3：魔法篱笆</h2>
+
+<h3 id="题目要点-dup-2">题目要点</h3>
+
+用 $1 \times 2$ 的多米诺骨牌铺满 $2 \times N$ 的区域，求方案数。
+
+<h3 id="思路解析-dup-2">思路解析</h3>
+
+这是一个经典的<strong>斐波那契数列</strong>应用题。
+设 $f(n)$ 为铺满 $2 \times n$ 区域的方案数：
+
+- 最后一块竖着放：剩下 $2 \times (n-1)$ 区域，方案数 $f(n-1)$。
+- 最后两块横着放（必须成对出现）：剩下 $2 \times (n-2)$ 区域，方案数 $f(n-2)$。
+  所以 $f(n) = f(n-1) + f(n-2)$。初始值 $f(1)=1, f(2)=2$。
+
+<h3 id="参考实现-dup-2">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+
+#define int long long
+
+using namespace std;
+
+const int MOD = 1e9 + 7;
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    int n;
+    if (!(cin &gt;&gt; n)) return 0;
+    if (n == 0) { cout &lt;&lt; 0; return 0; }
+    int a = 0, b = 1, ans = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        ans = (a + b) % MOD;
+        a = b;
+        b = ans;
+    }
+    cout &lt;&lt; ans;
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="题目 1-4：大葱茗挑战赛">题目 1-4：大葱茗挑战赛</h2>
+
+<h3 id="题目要点-dup-3">题目要点</h3>
+
+有 $n$ 个游戏，每个游戏有截止时间 $t_i$ 和罚款 $w_i$。初始资金 $m$，求剩钱最多的方案（即扣款最少）。
+
+<h3 id="思路解析-dup-3">思路解析</h3>
+
+这也是一个贪心问题。为了扣钱最少，我们要尽量完成<strong>罚款重</strong>的任务。
+
+1. 将任务按罚款 $w_i$ <strong>从大到小</strong>排序。
+2. 对于每个任务，尝试在它的截止时间 $t_i$ 这一天完成；如果那天占用了，就往前找空档。
+3. 如果从 $t_i$ 到 1 号时间点都被占用了，说明这个任务注定无法完成，扣除相应的 $w_i$。
+
+<h3 id="参考实现-dup-3">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+
+#define int long long
+
+using namespace std;
+
+struct Game {
+    int end, value;
+} g[550];
+
+bool used[1005]; // 标记时间槽是否被占用
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    int n, value;
+    cin &gt;&gt; value &gt;&gt; n;
+    for (int i = 0; i &lt; n; ++i) cin &gt;&gt; g[i].end;
+    for (int i = 0; i &lt; n; ++i) cin &gt;&gt; g[i].value;
+
+    // 优先保证罚款高的任务完成
+    sort(g, g + n, [](Game a, Game b) { return a.value &gt; b.value; });
+
+    for (int i = 0; i &lt; n; ++i) {
+        bool can_do = false;
+        // 从截止时间往前找空闲位置
+        for (int t = g[i].end; t &gt;= 1; --t) {
+            if (!used[t]) {
+                used[t] = true;
+                can_do = true;
+                break;
+            }
+        }
+        if (!can_do) value -= g[i].value;
+    }
+    cout &lt;&lt; value;
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="题目 1-5：导弹拦截">题目 1-5：导弹拦截</h2>
+
+<h3 id="题目要点-dup-4">题目要点</h3>
+
+拦截导弹系统：第一发高度任意，后续每一发都不能高于前一发。问拦截所有导弹最少需要多少套系统。
+
+<h3 id="思路解析-dup-4">思路解析</h3>
+
+根据 <strong>Dilworth 定理</strong>：
+
+- 拦截所有导弹所需的最少系统数 = 该序列的<strong>最长上升子序列 (LIS)</strong> 的长度。
+  也可以用贪心理解：每来一个导弹，找一个当前“最低拦截高度”且 $\ge$ 导弹高度的系统去接它；如果所有系统的最低高度都比导弹低，就得新开一套。
+
+<h3 id="参考实现-dup-4">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    vector&lt;int&gt; h;
+    int temp;
+    // 处理变长输入
+    while (cin &gt;&gt; temp) {
+        bool found = false;
+        int min_diff = 2e18, idx = -1;
+        // 贪心：找一个能拦截且拦截后剩余高度最低的系统
+        for (int j = 0; j &lt; h.size(); ++j) {
+            if (h[j] &gt;= temp) {
+                if (h[j] - temp &lt; min_diff) {
+                    min_diff = h[j] - temp;
+                    idx = j;
+                    found = true;
+                }
+            }
+        }
+        if (!found) h.push_back(temp);
+        else h[idx] = temp;
+    }
+    cout &lt;&lt; h.size();
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="题目 1-6：数字游戏">题目 1-6：数字游戏</h2>
+
+<h3 id="题目要点-dup-5">题目要点</h3>
+
+小绿和小黄各有 $n$ 个数的数列。每回合删一个数直到剩下一个。小绿想最大化差的绝对值 $|x-y|$，小黄想最小化它。小绿先手，求最终结果。
+
+<h3 id="思路解析-dup-5">思路解析</h3>
+
+博弈论思维：
+
+- 小绿控制 $x$，想让 $|x-y|$ 尽量大。
+- 小黄控制 $y$，想让 $|x-y|$ 尽量小。
+  无论小绿留下哪个 $x$，聪明的小黄一定会从自己的数列 $b$ 中挑选一个离 $x$ <strong>最近</strong>的数 $y$。
+  所以对于 $a$ 中的每个 $x$，其对应的结果是 $\min |x - b_j|$。
+  小绿作为先手且想最大化结果，他会遍历所有的 $x$，选择能让上述“最小值”最大的那个。
+
+<h3 id="参考实现-dup-5">参考实现</h3>
+
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n), b(n);
+    for (int i = 0; i &lt; n; ++i) cin &gt;&gt; a[i];
+    for (int i = 0; i &lt; n; ++i) cin &gt;&gt; b[i];
+
+    sort(b.begin(), b.end());
+
+    int max_min_diff = -1;
+    for (int x : a) {
+        // 在 b 中找离 x 最近的数
+        auto it = lower_bound(b.begin(), b.end(), x);
+        int current_min_diff = 2e18;
+        if (it != b.end()) current_min_diff = min(current_min_diff, abs(*it - x));
+        if (it != b.begin()) current_min_diff = min(current_min_diff, abs(*prev(it) - x));
+
+        if (max_min_diff == -1 || current_min_diff &gt; max_min_diff) {
+            max_min_diff = current_min_diff;
+        }
+    }
+    cout &lt;&lt; max_min_diff;
+    return 0;
+}
+</code></pre>
+
+<hr>
+<h2 id="结语">结语</h2>
+
+今天的题目虽然涉及了一些算法模板（如 LIS、区间贪心），但更重要的是对<strong>贪心策略</strong>和<strong>问题转化</strong>的理解。
+
+如果对博弈或者动态规划的部分感到困惑，建议手动模拟一下小规模的数据，感受一下选择的过程。
+
+祝大家代码一把过！🦞

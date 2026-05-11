@@ -1,0 +1,701 @@
+<blockquote><p>本文写的比较快，旨在帮助刚刚接触、不太了解STL的同学</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>如有任何问题或错误，欢迎使用个人主页的联系方式联系我，也可以评论留言（需登录GitHub）</p></blockquote>
+
+<h1>程序设计实训 — 题目解析</h1>
+
+<h2 id="写在前面">写在前面</h2>
+本文把每题的思路与关键代码逐段结合讲解，并在每题末尾内嵌了完整参考实现，便于复制运行。
+
+<strong>提供完整的代码是方便大家自己学习，任何情况下你都不应该直接复制然后粘贴来完成作业！</strong>
+
+下面对 6 道题目逐一讲解。为了避免路径不可见的问题，本文在每题讲解结束后都直接内嵌了完整的参考实现代码（可直接复制编译）。讲解中我们会把关键代码片段逐段说明，重复的通用部分（比如头文件、常见约定）会在下面统一说明一次。
+
+<hr>
+<h2 id="常见头文件与约定（统一说明）">常见头文件与约定（统一说明）</h2>
+
+- <code>#include <iostream></code>：标准输入输出（<code>cin</code> / <code>cout</code> / <code>endl</code>）。
+- <code>#include <string></code>：字符串类型 <code>std::string</code>。
+- <code>#include <vector></code>、<code>#include <map></code>、<code>#include <set></code>、<code>#include <queue></code>、<code>#include <stack></code>：常用 STL 容器，分别用于动态数组、关联映射、有序集合、队列和栈。
+- <code>#include <algorithm></code>：常用算法（排序、去重等）。
+- <code>using namespace std;</code>：方便书写标准库符号（示例代码里普遍使用）。
+- <code>#define int long long</code>：在这些参考实现中经常用来把 <code>int</code> 替换为 64 位整数以防止溢出；这是一个快捷写法，但在较大工程中不推荐滥用，优先明确使用 <code>long long</code>。
+- <code>signed</code>的意思是"带符号的"，大多数情况下，<code>signed</code> 、 <code>signed int</code> 、 <code>int</code> 三者等价
+<blockquote><p><code>#define A B</code> 的意思是：在这个代码里，<strong>凡是</strong>出现 <code>A</code> 的地方，编译之前全部帮我偷偷换成 <code>B</code>。</p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>所以，当你写了：</p></blockquote>
+<blockquote><p><code>#define int long long</code></p></blockquote>
+<blockquote><p></p></blockquote>
+<blockquote><p>编译器在处理你的代码时，会发生下面的变化：</p></blockquote>
+<blockquote><p>* 你写的 <code>int a;</code> 变成了 <code>long long a;</code>（这是你的目的，为了防止数据溢出）。</p></blockquote>
+<blockquote><p>* 你写的 <code>vector<int> v;</code> 变成了 <code>vector<long long> v;</code>。</p></blockquote>
+<blockquote><p>* <strong>但是！</strong> 你写的 <code>int main()</code> 也会变成 <strong><code>long long main()</code></strong>。</p></blockquote>
+<blockquote><p>由于C++要求main函数的返回值只能是<code>int</code>，而且我们直接把<code>int</code>的含义改成了<code>long long</code>，所以这里我们只好写<code>signed main()</code>，用一个和<code>int</code>意义相同但是名字不同的<code>signed</code></p></blockquote>
+
+以上头文件只讲解一次，后续涉及到的代码段会直接引用这些类型和容器，讲解重点放在逻辑与控制流程上。
+
+<hr>
+<h2 id="题目 1：约瑟夫环（Josephus Problem）">题目 1：约瑟夫环（Josephus Problem）</h2>
+
+<h3 id="相关知识：queue">相关知识：queue</h3>
+
+<h4 id="1. 核心逻辑：先来后到 (FIFO)">1. 核心逻辑：先来后到 (FIFO)</h4>
+
+<code>queue</code> 遵循的最基本原则是 <strong>FIFO</strong> (First In, First Out)，即<strong>先进先出</strong>。
+
+想象你在超市排队结账：
+* <strong>第一个</strong>排队的人，<strong>第一个</strong>结账离开。
+* 新来的人只能排在<strong>队尾</strong>。
+* 你不能插队，也不能从中间离开。
+
+<hr>
+<h4 id="2. 核心操作（只有这四招）">2. 核心操作（只有这四招）</h4>
+
+在 C++ 中，操作一个 <code>queue</code> 主要就这四个函数：
+
+| 动作 | C++ 函数名 | 形象理解 |
+| :--- | :--- | :--- |
+| <strong>入队</strong> | <code>push()</code> | 新人来到队尾排队。 |
+| <strong>查看队首</strong> | <code>front()</code> | 看看现在轮到谁结账了（但他还没走）。 |
+| <strong>出队</strong> | <code>pop()</code> | 队首的人结完账，离开了。 |
+| <strong>判空</strong> | <code>empty()</code> | 看看队伍里还有没有人。 |
+
+<hr>
+<h3 id="题目要点">题目要点</h3>
+n 个人围成一圈，从 1 开始报数，报到 m 的人出局，重复直到只剩一人，输出该人的编号。
+
+<h3 id="思路与代码讲解（逐段）">思路与代码讲解（逐段）</h3>
+
+- 头文件：
+```cpp;
+#include <iostream>
+#include <queue>
+<pre><code class="language-plaintext">- 初始化与读入：
+
+</code></pre>cpp
+queue<int> q;
+int n, m;
+cin >> n >> m;
+<pre><code class="language-plaintext">说明：使用 <code>queue&lt;int&gt;</code> 来模拟环上的顺序，读入 <code>n, m</code>。<code>queue</code> 支持 <code>push/pop/front</code>，很方便实现“从头拿出并放回”的操作。
+
+- 建立初始队列（编号 1..n）：
+
+</code></pre>cpp
+for (int i = 1; i <= n; ++i) {
+    q.push(i);
+}
+<pre><code class="language-plaintext">说明：把编号按顺序入队，队列的顺序即为报数顺序，出局时直接 <code>pop()</code> 即可。
+
+- 主循环：按 m 进行“旋转 + 出局”操作：
+
+</code></pre>cpp
+while (q.size() > 1) {
+    for (int i = 1; i < m; ++i) {
+        int x = q.front();
+        q.pop();
+        q.push(x);
+    }
+    q.pop();
+}
+<pre><code class="language-plaintext">- 输出：
+</code></pre>cpp
+cout << q.front() << "\n";
+<pre><code class="language-plaintext">说明：内层循环把前 m-1 个人从队首移到队尾，队首变为第 m 人，直接 <code>pop()</code> 出局。直到队中只剩 1 个元素，输出队首即可。
+
+<h3 id="参考实现">参考实现</h3>
+</code></pre>cpp
+#include <iostream>
+#include <queue>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+	queue<int> q;
+	int n, m;
+	cin >> n >> m;
+	for (int i = 1; i <= n; ++i) {
+		q.push(i);
+	}
+	while (q.size() > 1) {
+		for (int i = 1; i < m; ++i) {
+			int x = q.front();
+			q.pop();
+			q.push(x);
+		}
+		q.pop();
+	}
+	cout << q.front() << "\n";
+	return 0;
+}
+<pre><code class="language-plaintext">---
+
+<h2 id="题目 2：颜色计数（按出现顺序统计）">题目 2：颜色计数（按出现顺序统计）</h2>
+
+<h3 id="核心知识：map">核心知识：map</h3>
+
+<h4 id="1. 核心逻辑：键值对 (Key-Value Pair)">1. 核心逻辑：键值对 (Key-Value Pair)</h4>
+
+在普通的数组（Array）或向量（Vector）里，你是通过<strong>数字下标</strong>（0, 1, 2...）来找东西的。
+而在 <code>map</code> 里，你可以用<strong>任何你喜欢的东西</strong>来找东西。
+
+<code>map</code> 的每一条数据都由两部分组成：
+* <strong>键 (Key)</strong>：相当于“名字”或“单词”，必须是唯一的。
+* <strong>值 (Value)</strong>：相当于“电话号码”或“解释”，是与键对应的内容。
+
+<hr>
+<h4 id="2. 核心操作">2. 核心操作</h4>
+
+使用 <code>map</code> 需要包含头文件 <code>#include &lt;map&gt;</code>。
+
+| 动作 | 代码写法 | 形象理解 |
+| :--- | :--- | :--- |
+| <strong>插入/更新</strong> | <code>m["张三"] = 138...</code> | 在通讯录里新建一个联系人或修改号码。 |
+| <strong>查找</strong> | <code>m["张三"]</code> | 翻开通讯录，看张三的号码是多少。 |
+| <strong>擦除</strong> | <code>m.erase("张三")</code> | 删掉这个联系人。 |
+| <strong>大小</strong> | <code>m.size()</code> | 看看通讯录里一共存了多少人。 |
+
+<hr>
+<h4 id="⚠️ 重点注意：">⚠️ 重点注意：</h4>
+
+- 中括号 [ ] 的副作用
+
+在 map 中，如果你尝试用 [] 去访问一个根本不存在的键，比如：
+
+</code></pre>std::cout << ageMap["不存在的人"];<pre><code class="language-plaintext">map 会非常“热心”地帮你把这个键新建出来，并给它一个默认值（比如 0）。
+建议：如果你只是想查询而不希望乱改 map，先用 .count() 检查一下，或者使用 .find()。
+
+<hr>
+<h3 id="题目要点-dup-1">题目要点</h3>
+对每组样例读取 n 个由小写字母组成的颜色字符串，统计每种颜色出现次数，并按颜色第一次出现的先后顺序输出。
+
+<h3 id="思路与代码讲解（逐段）-dup-1">思路与代码讲解（逐段）</h3>
+
+- 头文件：
+
+</code></pre>cpp
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+<pre><code class="language-plaintext">- 大循环：
+</code></pre>cpp
+int N; cin >> N;
+for (int I = 0; I < N; ++I) {
+	//......
+}
+<pre><code class="language-plaintext">- 初始化、每组数据的输入输出：
+</code></pre>cpp
+map<string, int> m;
+vector<string> order;
+m.clear();
+order.clear();
+
+int n;
+cin >> n;
+<pre><code class="language-plaintext">说明：这里使用 <code>map&lt;string,int&gt;</code> 存储计数，<code>vector&lt;string&gt; order</code> 记录颜色第一次出现的顺序。可以用 <code>unordered_map</code> 提高常数性能，但 <code>map</code> 已能满足题目要求。
+
+- 主循环与计数逻辑：
+
+</code></pre>cpp
+for (int i = 0; i < n; ++i) {
+	string s; cin >> s;
+	if (m.count(s) == 0) {
+		m[s] = 1;
+		order.push_back(s);
+	} else {
+		m[s]++;
+	}
+}
+<pre><code class="language-plaintext">说明：读到新颜色时在 <code>order</code> 中记录，这样最后按 <code>order</code> 输出时可以保持原始出现次序。
+
+- 输出：
+
+</code></pre>cpp
+for (const auto& s : order) {
+	cout << s << " " << m[s] << "\n";
+}
+<pre><code class="language-plaintext">### 参考实现（可复制运行）
+</code></pre>cpp
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+	int N;
+	cin >> N;
+	for (int I = 0; I < N; ++I) {
+		map<string, int> m;
+		vector<string> order;
+		m.clear();
+		order.clear();
+		int n;
+		cin >> n;
+		for (int i = 0; i < n; ++i) {
+			string s;
+			cin >> s;
+			if (m.count(s) == 0) {
+				m[s] = 1;
+				order.push_back(s);
+			} else {
+				m[s]++;
+			}
+		}
+		for (const auto& s : order) {
+			cout << s << " " << m[s] << "\n";
+		}
+	}
+	return 0;
+}
+<pre><code class="language-plaintext">---
+
+<h2 id="题目 3：去重并排序">题目 3：去重并排序</h2>
+
+<h3 id="核心知识：set">核心知识：set</h3>
+
+<h4 id="1. 核心逻辑：去重与排序">1. 核心逻辑：去重与排序</h4>
+
+想象你正在收集球星卡：
+* <strong>去重</strong>：如果你已经有一张“梅西”了，再拿到一张同样的，你不会把它放进珍藏册，因为册子里只需要<strong>一个</strong>梅西。
+* <strong>排序</strong>：当你把卡片放进 <code>set</code> 时，它会自动按顺序（比如从小到大）帮你摆好。
+
+
+
+<hr>
+<h4 id="2. 核心操作-dup-1">2. 核心操作</h4>
+
+使用 <code>set</code> 需要包含头文件 <code>#include &lt;set&gt;</code>。
+
+| 动作 | 代码写法 | 形象理解 |
+| :--- | :--- | :--- |
+| <strong>插入</strong> | <code>s.insert(10)</code> | 往集合里丢一个数。如果已经有了，它就进不去。 |
+| <strong>查找</strong> | <code>s.count(10)</code> | 检查集合里有没有 10（有返回 1，没返回 0）。 |
+| <strong>删除</strong> | <code>s.erase(10)</code> | 把 10 从集合里踢出去。 |
+| <strong>清空</strong> | <code>s.clear()</code> | 把集合全部清空。 |
+
+<hr>
+<h3 id="题目要点-dup-2">题目要点</h3>
+给定 N 个整数（范围 1..1000），去重后按升序输出不相同的数字及其个数。
+
+<h3 id="思路与代码讲解（逐段）-dup-2">思路与代码讲解（逐段）</h3>
+
+- 头文件：
+</code></pre>cpp
+#include <algorithm>
+#include <iostream>
+#include <set>
+<pre><code class="language-plaintext">- 关键容器：
+
+</code></pre>cpp
+set<int> s;
+<pre><code class="language-plaintext">- 主要流程（输入）：
+</code></pre>cpp
+int n; cin >> n;
+for (int i = 0; i < n; ++i) {
+	int temp;
+	cin >> temp;
+	s.insert(temp);//插入的同时，set自动完成去重与排序
+}
+<pre><code class="language-plaintext">- 输出：
+</code></pre>cpp
+cout << s.size() << "\n";
+for (auto x : s) cout << x << " ";
+<pre><code class="language-plaintext"><code>set&lt;int&gt;</code> 自动去重并维持有序集合，代码简洁直观。
+
+<h3 id="参考实现（可复制运行）">参考实现（可复制运行）</h3>
+</code></pre>cpp
+#include <algorithm>
+#include <iostream>
+#include <set>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+	int n;
+	cin >> n;
+	int temp;
+	set<int> s;
+	for (int i = 0; i < n; ++i) {
+		cin >> temp;
+		s.insert(temp);
+	}
+	cout << s.size() << "\n";
+	for (auto x : s) {
+		cout << x << " ";
+	}
+	return 0;
+}
+<pre><code class="language-plaintext">---
+
+<h2 id="题目 4：合并果堆（最小体力）">题目 4：合并果堆（最小体力）</h2>
+
+<h3 id="相关知识：priority_queue">相关知识：priority_queue</h3>
+
+<h4 id="1. 核心逻辑：权重最高者先出">1. 核心逻辑：权重最高者先出</h4>
+
+在一个优先队列里，元素会被自动排序：
+* <strong>默认情况下</strong>：数值最大的元素排在最前面（大顶堆）。
+* <strong>特殊设置下</strong>：数值最小的元素排在最前面（小顶堆）。
+
+<hr>
+<h4 id="2. 核心操作-dup-2">2. 核心操作</h4>
+
+使用它需要包含头文件 <code>#include &lt;queue&gt;</code>（没错，和普通队列同一个头文件）。
+
+| 动作 | 代码写法 | 形象理解 |
+| :--- | :--- | :--- |
+| <strong>入队</strong> | <code>pq.push(x)</code> | 把一个元素丢进队列，它会自动找准自己的位置。 |
+| <strong>看最优先</strong> | <code>pq.top()</code> | 注意！这里是用 <strong>top</strong> 而不是 front。 |
+| <strong>出队</strong> | <code>pq.pop()</code> | 让优先级最高的那个人离开。 |
+
+<hr>
+<h4 id="3. 小顶堆的实现">3. 小顶堆的实现</h4>
+
+这是大顶堆的代码：
+<code>priority_queue&lt;int&gt; pq;</code>
+
+这是<strong>小顶堆</strong>的代码：
+<code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; pq;</code>
+
+我们把它拆成三部分来看：
+
+1.  <strong><code>int</code></strong>：告诉它里面装的是整数。
+2.  <strong><code>vector&lt;int&gt;</code></strong>：这是“底层容器”。优先队列需要一个地方来存数据，默认就是 <code>vector</code>。这一项通常是固定的。
+3.  <strong><code>greater&lt;int&gt;</code></strong>：<strong>这是灵魂！</strong> * 如果不写这一项，默认是 <code>less&lt;int&gt;</code>，即“大的优先”（大顶堆）。
+    * 写了 <code>greater&lt;int&gt;</code>，就变成了<strong>“小的优先”</strong>（小顶堆）。
+
+&gt; 为什么多了第2部分：<code>vector&lt;int&gt;</code>？
+&gt; C++里，priority_queue里存在着这样两个定义：
+&gt; 1. <code>priority_queue&lt; T &gt;</code> ，直接创建一个类型为T的优先队列
+&gt; 2. <code>priority_queue&lt; A , B , C &gt;</code> ，创建一个数据类型为A、底层实现为B、规则为C的优先队列
+&gt;
+&gt; 其实，我们并不需要B，但是编译器规定只能写<code>priority_queue&lt; A , B , C &gt;</code> ，并没有<code>priority_queue&lt; A , C &gt;</code> 这种定义
+&gt;
+&gt;所以我们为了用规则C来实现小顶堆，就必须用<code>priority_queue&lt; A , B , C &gt;</code>，而B就需要填<code>vector&lt;int&gt;</code>
+
+<hr>
+<h3 id="题目要点-dup-3">题目要点</h3>
+给定若干堆果子，每次合并两堆消耗等于两堆之和，求使总消耗最小的合并顺序的最小代价。
+
+<h3 id="思路与代码讲解（逐段）-dup-3">思路与代码讲解（逐段）</h3>
+- 头文件：
+</code></pre>cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+<pre><code class="language-plaintext">- 输入部分（使用小顶堆为下面自动处理做准备）：
+
+</code></pre>cpp
+int n; cin >> n;
+priority_queue<int, vector<int>, greater<int>> pq;
+for (int i = 0; i < n; ++i) { 
+	int weight; 
+	cin >> weight; 
+	pq.push(weight); 
+}
+<pre><code class="language-plaintext">- 关键步骤：借助小顶堆来每次取最小的两堆合并
+</code></pre>cpp
+long long ans = 0;
+while (pq.size() > 1) {
+	int a = pq.top(); pq.pop();
+	int b = pq.top(); pq.pop();
+	ans += (long long)a + b;
+	pq.push(a + b);
+}
+cout << ans << endl;
+<pre><code class="language-plaintext">说明：每次合并最小的两堆能使得后续合并的权重也尽可能小，贪心正确。
+
+<h3 id="参考实现（可复制运行）-dup-1">参考实现（可复制运行）</h3>
+</code></pre>cpp
+#include <iostream>
+#include <queue>
+#include <vector>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+
+	int n;
+	cin >> n;
+
+	priority_queue<int, vector<int>, greater<int>> pq;
+
+	for (int i = 0; i < n; ++i) {
+		int weight;
+		cin >> weight;
+		pq.push(weight);
+	}
+
+	long long ans = 0;
+
+	while (pq.size() > 1) {
+		int first = pq.top();
+		pq.pop();
+		int second = pq.top();
+		pq.pop();
+		int combined = first + second;
+		ans += combined;
+		pq.push(combined);
+	}
+
+	cout << ans << endl;
+
+	return 0;
+}
+<pre><code class="language-plaintext">---
+
+<h2 id="题目 5：平衡括号序列判断">题目 5：平衡括号序列判断</h2>
+
+<h3 id="关键知识：stack">关键知识：stack</h3>
+
+<h4 id="1. 核心逻辑：后进先出 (LIFO)">1. 核心逻辑：后进先出 (LIFO)</h4>
+
+<code>stack</code> 遵循的最基本原则是 <strong>LIFO</strong> (Last In, First Out)，即<strong>后进先出</strong>。
+
+想象你在洗碗，洗好的碗一个接一个叠在一起：
+* 你最后放上去的那个碗，一定是在<strong>最上面</strong>的。
+* 当你要用碗时，你拿走的也是<strong>最上面</strong>那个（也就是最后放进去的那个）。
+* 除非你把上面的碗都拿走，否则你拿不到最底下的碗。
+
+<hr>
+<h4 id="2. 核心操作-dup-3">2. 核心操作</h4>
+
+使用 <code>stack</code> 需要包含头文件 <code>#include &lt;stack&gt;</code>。
+
+| 动作 | C++ 函数名 | 形象理解 |
+| :--- | :--- | :--- |
+| <strong>压栈</strong> | <code>push()</code> | 往碗堆最上面放一个新碗。 |
+| <strong>查看栈顶</strong> | <code>top()</code> | 看看最上面的碗是什么样子的。 |
+| <strong>弹栈</strong> | <code>pop()</code> | 把最上面的那个碗拿走。 |
+| <strong>判空</strong> | <code>empty()</code> | 看看还有没有碗可以拿。 |
+
+<hr>
+<h3 id="题目要点-dup-4">题目要点</h3>
+给定只包含括号的字符串，判断是否为平衡括号序列（例如 <code>()[]</code>、<code>([])</code> 是平衡的）。
+
+<h3 id="思路与代码讲解（逐段）-dup-4">思路与代码讲解（逐段）</h3>
+
+- 头文件：
+</code></pre>cpp
+#include <iostream>
+#include <stack>
+#include <string>
+<pre><code class="language-plaintext">- 变量声明、输入：
+</code></pre>cpp
+string s;
+cin >> s;
+stack<char> st;
+<pre><code class="language-plaintext">- 关键容器：<code>stack&lt;char&gt;</code> 用来保存未匹配的左括号：
+
+</code></pre>cpp
+for (auto c : s) {
+	if (c == '(' || c == '[' || c == '{') {
+		st.push(c);
+	} else {
+		if (st.empty()) { 
+			cout << "No\n"; 
+			return 0; 
+		}
+		char top = st.top(); st.pop();
+		if ((c == ')' && top != '(') || (c == ']' && top != '[') || (c == '}' && top != '{')) {
+			cout << "No\n"; 
+			return 0;
+		}
+	}
+}
+cout << (st.empty() ? "Yes" : "No");   // 注意只有最后栈为空时才证明完美匹配
+									   // 若栈不为空则说明还有左括号：( [ { 尚未匹配
+<pre><code class="language-plaintext">说明：每遇到右括号就检查栈顶是否为对应左括号，否则立即返回 <code>No</code>；遍历结束栈为空则 <code>Yes</code>。
+
+<h3 id="参考实现（可复制运行）-dup-2">参考实现（可复制运行）</h3>
+</code></pre>cpp
+#include <iostream>
+#include <stack>
+#include <string>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+	string s;
+	cin >> s;
+	int l = s.length();
+	stack<char> st;
+	for (auto c : s) {
+		if (c == ('(') || c == ('[') || c == ('{')) {
+			st.push(c);
+		} else {
+			if (st.empty()) {
+				cout << "No\n";
+				return 0;
+			}
+			char top = st.top();
+			st.pop();
+			if ((c == ')' && top != '(') || (c == ']' && top != '[') || (c == '}' && top != '{')) {
+				cout << "No\n";
+				return 0;
+			}
+		}
+	}
+	if (st.empty()) {
+		cout << "Yes";
+	} else {
+		cout << "No";
+	}
+	return 0;
+}
+<pre><code class="language-plaintext">---
+
+<h2 id="题目 6：序列展开协议（p1,p2,p3 参数控制）">题目 6：序列展开协议（p1,p2,p3 参数控制）</h2>
+&gt; 感觉此题对STL的学习意义不大，大家当作一道思维难度不大但要求多的题随便做做就好
+
+<h3 id="题目要点-dup-5">题目要点</h3>
+根据 <code>p1,p2,p3</code> 对压缩串中形如 <code>a-c</code> 或 <code>3-7</code> 的片段做展开（填充不同形式、重复次数、顺序控制），并处理若干异常情况（相邻直接删除 <code>-</code>、类型不一致或稳态保留 <code>-</code> 等）。
+
+<h3 id="思路与代码讲解（逐段）-dup-5">思路与代码讲解（逐段）</h3>
+
+- 程序先读三个参数并读入字符串，然后从左到右逐字符处理：当遇到 <code>-</code> 时，根据其左右字符类型（字母或数字）和 ASCII 比较决定是否执行展开或直接输出 <code>-</code>。
+
+核心循环片段说明（节选并讲解逻辑分支）：
+
+</code></pre>cpp
+int p1, p2, p3; cin >> p1 >> p2 >> p3;
+string s; cin >> s;
+cout << s[0];
+for (int i = 1; i < (int)s.length(); i++) {
+	if (s[i] == '-') {
+		// 当且仅当两侧同为小写字母或同为数字且右侧字符大于左侧，才尝试展开
+		if (s[i - 1] >= 'a' && s[i - 1] <= 'z' && s[i + 1] >= 'a' && s[i + 1] <= 'z' && s[i - 1] < s[i + 1]) {
+			// 根据 p1 决定填充：小写 / 大写 / 星号；p2 决定重复次数；p3 决定升序或降序输出
+		}
+		else if (s[i - 1] >= '0' && s[i - 1] <= '9' && s[i + 1] >= '0' && s[i + 1] <= '9' && s[i - 1] < s[i + 1]) {
+			// 数字区间处理（p1 对数字无影响）
+		} else {
+			cout << '-'; // 非法或稳态情况原样输出 '-'
+		}
+	} else {
+		cout << s[i];
+	}
+}
+<pre><code class="language-plaintext">说明：实现细节包括字符到字符之间按 ASCII 遍历并根据 p1/p2/p3 输出不同内容，代码分支较多但逻辑清晰。注意在严格部署到不可信输入时要保证对 <code>s[i+1]</code> 的访问不越界（题目数据通常保证 <code>-</code> 不在首尾）。
+
+<h3 id="参考实现（可复制运行）-dup-3">参考实现（可复制运行）</h3>
+</code></pre>cpp
+#include <iostream>
+#include <stack>
+#include <string>
+
+#define int long long
+
+using namespace std;
+
+signed main() {
+	ios::sync_with_stdio(false), cin.tie(0), cout.tie(0);
+	int p1, p2, p3;
+	cin >> p1 >> p2 >> p3;
+	string s;
+	cin >> s;
+	int l = s.length();
+	cout << s[0];
+	for (int i = 1; i < l; i++) {
+		if (s[i] == '-') {
+			if (s[i - 1] >= 'a' && s[i - 1] <= 'z' && s[i + 1] >= 'a' && s[i + 1] <= 'z' && s[i - 1] < s[i + 1]) {
+				if (p1 == 1) {
+					if (p3 == 1) {
+						for (char c = s[i - 1] + 1; c < s[i + 1]; ++c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << c;
+							}
+						}
+					} else {
+						for (char c = s[i + 1] - 1; c > s[i - 1]; --c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << c;
+							}
+						}
+					}
+				} else if (p1 == 2) {
+					if (p3 == 1) {
+						for (char c = s[i - 1] + 1; c < s[i + 1]; ++c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << (char)(c - 'a' + 'A');
+							}
+						}
+					} else {
+						for (char c = s[i + 1] - 1; c > s[i - 1]; --c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << (char)(c - 'a' + 'A');
+							}
+						}
+					}
+				} else if (p1 == 3) {
+					for (char c = s[i - 1] + 1; c < s[i + 1]; ++c) {
+						for (int j = 0; j < p2; ++j) {
+							cout << '*';
+						}
+					}
+				}
+			} else if (s[i - 1] >= '0' && s[i - 1] <= '9' && s[i + 1] >= '0' && s[i + 1] <= '9' &&
+					   s[i - 1] < s[i + 1]) {
+				if (p1 == 3) {
+					for (char c = s[i - 1] + 1; c < s[i + 1]; ++c) {
+						for (int j = 0; j < p2; ++j) {
+							cout << '*';
+						}
+					}
+				} else {
+					if (p3 == 1) {
+						for (char c = s[i - 1] + 1; c < s[i + 1]; ++c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << c;
+							}
+						}
+					} else {
+						for (char c = s[i + 1] - 1; c > s[i - 1]; --c) {
+							for (int j = 0; j < p2; ++j) {
+								cout << c;
+							}
+						}
+					}
+				}
+
+			} else {
+				cout << '-';
+			}
+		} else {
+			cout << s[i];
+		}
+	}
+	return 0;
+}
+```
+<hr>
+<h2 id="统一注意事项与调试建议（精简）">统一注意事项与调试建议（精简）</h2>
+
+- 统一约定：参考实现中使用 <code>#define int long long</code> 是为了简单防止整型溢出；理解其副作用并酌情使用，推荐在真实项目中显式使用 <code>long long</code>。
+- 建议养成习惯：写小样例并手动跟踪变量变化（尤其涉及下标、栈、队列操作时），遇到 WA 时先打印关键状态（例如队列长度、栈顶、当前索引）快速定位。
+
+<h2 id="结语">结语</h2>
+STL是C++里比较重要的内容，学会了STL后再写代码会方便很多。
+
+后期我们程序设计课也会有所涉及
+
+这部分新的语法可能比较多，但希望大家一定要尽力理解
+
+
