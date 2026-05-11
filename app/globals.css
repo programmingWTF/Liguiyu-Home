@@ -249,7 +249,11 @@ html:not(.dark) .blog-content td { border: 1px solid rgba(0,0,0,0.04); }
 .blog-content img { max-width: 100%; border-radius: 12px; margin: 16px 0; }
 .blog-content hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 32px 0; }
 
-/* ── TOC ── */
+/* ── TOC light mode ── */
+html:not(.dark) .blog-sidebar { background-color: rgba(255,255,255,0.85) !important; border-right-color: rgba(0,0,0,0.06) !important; }
+html:not(.dark) .blog-sidebar a { color: rgba(0,0,0,0.55) !important; font-weight: 400 !important; }
+html:not(.dark) .blog-sidebar a[style*="#0081c0"] { color: #0081c0 !important; font-weight: 600 !important; }
+html:not(.dark) .blog-toc-title { color: rgba(0,0,0,0.4) !important; }
 .blog-toc { max-height: 70vh; display: flex; flex-direction: column; }
 .blog-toc-list { max-height: calc(70vh - 40px); }
 

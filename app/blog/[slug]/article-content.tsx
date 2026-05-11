@@ -36,7 +36,7 @@ export default function ArticleContent({ html }: { html: string }) {
         const firstP = bq.querySelector("p:first-child");
         if (firstP && MARKER_RE.test(firstP.innerHTML)) continue;
         
-        // Collect ALL adjacent non-marker blockquotes FIRST (before any DOM mutation)
+        // Collect adjacent non-marker blockquotes
         const toMerge: Element[] = [bq];
         let sibling = bq.nextElementSibling;
         while (sibling && sibling.tagName === "BLOCKQUOTE") {
@@ -46,21 +46,25 @@ export default function ArticleContent({ html }: { html: string }) {
           sibling = sibling.nextElementSibling;
         }
         
+        // Merge: use textContent to strip > prefix cleanly
+        const paragraphs: string[] = [];
+        for (const b of toMerge) {
+          const ps = b.querySelectorAll("p");
+          ps.forEach(p => {
+            let text = p.textContent || "";
+            // Strip leading > and whitespace
+            text = text.replace(/^\s*>\s*/, "");
+            // Preserve inner HTML (strong, em, a, code, etc)
+            let html = p.innerHTML;
+            // If the first text node starts with >, remove it from innerHTML too
+            html = html.replace(/^(\s*)>\s*/, "$1");
+            paragraphs.push(`<p>${html}</p>`);
+          });
+        }
+        
         if (toMerge.length > 1) {
-          // Merge all HTML, stripping stray >  prefixes
-          let merged = "";
-          for (const b of toMerge) {
-            let h = b.innerHTML;
-            // Strip >  that appears after <p> or at start of content
-            h = h.replace(/<p[^>]*>\s*>\s*/gi, "<p>").replace(/^\s*>\s*/g, "");
-            merged += h;
-          }
-          
-          // Remove all merged elements except the first
           for (let j = 1; j < toMerge.length; j++) toMerge[j].remove();
-          
-          // Update first element
-          bq.innerHTML = merged;
+          bq.innerHTML = paragraphs.join("");
           bq.style.cssText = "border-left:3px solid rgba(0,129,192,0.3);background:rgba(0,129,192,0.04);border-radius:10px;padding:12px 16px;margin:16px 0";
         }
       }
