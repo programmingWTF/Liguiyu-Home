@@ -26,8 +26,8 @@
 | `/vol1/1000/Docker/liguiyu-home/` | 部署目录（完整源码副本） |
 | `/vol1/1000/Docker/liguiyu-home/.env` | 实际生效的环境变量（从 .env.production 复制） |
 | `/vol1/1000/Docker/liguiyu-home/data/liguiyu.db` | SQLite 数据库（用户数据持久化） |
-| Docker 容器名 | `liguiyu-home` |
-| 容器端口 | `3090:3000`（NAS:3090 → 容器:3000） |
+| Docker 容器名 | `liguiyu-home` (公开), `liguiyu-admin` (管理后台) |
+| 容器端口 | `3090:3000`（公开站点）, `3091:3000`（管理后台） |
 
 ### 关键技术栈
 
@@ -60,11 +60,16 @@ cd /vol1/1000/Docker/liguiyu-home
 # 重新构建+启动（代码有改动时）
 sudo docker compose up -d --build
 
+# 仅构建/重启某个服务
+sudo docker compose up -d --build liguiyu-home    # 只更新公开站点
+sudo docker compose up -d --build liguiyu-admin   # 只更新管理后台
+
 # 重启（只改环境变量时）
 sudo docker compose up -d --force-recreate
 
 # 查看日志
 sudo docker logs liguiyu-home
+sudo docker logs liguiyu-admin
 
 # 查看容器状态
 sudo docker ps | grep liguiyu
@@ -106,6 +111,22 @@ ssh Server "echo '1.gary2.gary.lgy.LGY' | sudo -S docker compose up -d --build"
 - 登录成功后 `signIn("credentials", { redirect: false })` → `window.location.href = "/"`
 - Navbar 用 `useSession()` 检测登录状态，AuthButton 组件
 
+### 管理后台架构（双实例模式）
+- **公开实例** (端口 3090, liguiyu.com)：完整 NextAuth 认证，管理员通过 /admin 登录后访问
+- **管理实例** (端口 3091, Cloudflare Zero Trust 保护)：
+  - `NEXT_PUBLIC_ADMIN_MODE=true` 编译时常量跳过所有 SessionProvider/useSession
+  - `ADMIN_MODE=true` 运行时跳过 admin API 的 isAdmin() 鉴权
+  - Cloudflare Zero Trust 在外层处理认证，应用层零鉴权
+  - 与公开实例共享同一个 SQLite 数据库（data/ 挂载）
+- 关键判断点：
+  - `app/components/Providers.tsx`：ADMIN_MODE 时跳过 SessionProvider
+  - `app/components/Navbar.tsx`：ADMIN_MODE 时 AuthButton 不渲染
+  - `app/blog/[slug]/comments.tsx`：ADMIN_MODE 时返回 null
+  - `app/admin/page.tsx`：拆分为 PublicAdminPage / AdminModePage
+  - `app/api/admin/users/route.ts`：ADMIN_MODE 时跳过 isAdmin()
+  - `app/api/admin/comments/route.ts`：ADMIN_MODE 时跳过 isAdmin()
+- Docker：两个服务共用同一 Dockerfile，通过 build args 区分
+
 ### 数据库
 - SQLite 文件: `data/liguiyu.db`
 - 表: users, sessions, verification_codes
@@ -116,6 +137,21 @@ ssh Server "echo '1.gary2.gary.lgy.LGY' | sudo -S docker compose up -d --build"
 - ThemeProvider: 默认跟随系统，localStorage 持久化
 - CSS: `html.dark` class 控制，text-heading/text-body/text-sub 等工具类
 - 导航栏: useLightText / showNavBg 控制颜色
+
+### 部署架构
+```
+Cloudflare Zero Trust (鉴权)
+         │
+    ┌────┴────┐
+    │         │
+端口 3091   端口 3090
+管理后台   公开站点
+(无应用鉴权) (NextAuth)
+    │         │
+    └────┬────┘
+    共享 SQLite DB
+    (./data/liguiyu.db)
+```
 
 ### Docker 构建注意事项
 - npm install 需要 `--legacy-peer-deps`（next-auth 与 Next.js 16 兼容问题）

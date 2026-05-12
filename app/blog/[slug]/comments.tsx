@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { MessageCircle, Send, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 
+const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
+
 interface Comment {
   id: string;
   user_name: string;
@@ -15,6 +17,11 @@ interface Comment {
 }
 
 export default function BlogComments({ slug }: { slug: string }) {
+  // 管理实例无 SessionProvider，直接跳过评论功能
+  if (isAdminMode) {
+    return null;
+  }
+
   const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [text, setText] = useState("");

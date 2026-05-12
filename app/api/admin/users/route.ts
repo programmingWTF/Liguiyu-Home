@@ -4,9 +4,12 @@ import { isAdmin } from "@/app/lib/admin";
 
 export const dynamic = "force-dynamic";
 
+// 管理实例（端口 3091）：Cloudflare Zero Trust 在外层处理认证，应用层无需鉴权
+const skipAuth = process.env.ADMIN_MODE === "true";
+
 // GET /api/admin/users — list all users
 export async function GET() {
-  if (!(await isAdmin())) {
+  if (!skipAuth && !(await isAdmin())) {
     return NextResponse.json({ error: "无权限" }, { status: 403 });
   }
 
@@ -22,7 +25,7 @@ export async function GET() {
 
 // DELETE /api/admin/users — delete a user
 export async function DELETE(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!skipAuth && !(await isAdmin())) {
     return NextResponse.json({ error: "无权限" }, { status: 403 });
   }
 
@@ -43,7 +46,7 @@ export async function DELETE(req: NextRequest) {
 
 // PATCH /api/admin/users — update user role or verify status
 export async function PATCH(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!skipAuth && !(await isAdmin())) {
     return NextResponse.json({ error: "无权限" }, { status: 403 });
   }
 

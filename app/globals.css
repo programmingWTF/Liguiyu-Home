@@ -22,8 +22,7 @@
   --color-medium-gray: #646464;
   --color-light-gray: #b4b8b4;
 
-  --font-display: var(--font-playfair-display);
-  --font-body: var(--font-geist-sans);
+  --font-body: var(--font-display);
   --font-mono: var(--font-geist-mono);
 
   --text-caption: 13px;
@@ -234,8 +233,19 @@ html:not(.dark) .blog-content code { background: rgba(0,129,192,0.08); }
 .blog-content pre::-webkit-scrollbar-thumb, .blog-content .table-wrapper::-webkit-scrollbar-thumb, .blog-page pre::-webkit-scrollbar-thumb { background: rgba(0,129,192,0.3); border-radius: 3px; }
 .blog-content pre::-webkit-scrollbar-thumb:hover, .blog-content .table-wrapper::-webkit-scrollbar-thumb:hover, .blog-page pre::-webkit-scrollbar-thumb:hover { background: rgba(0,129,192,0.55); }
 html:not(.dark) .blog-content pre { background: #f1f5f9; border: 1px solid #e2e8f0; }
-.blog-content pre code { background: none !important; padding: 0; font-size: 14px; color: #c8ccd6; }
-html:not(.dark) .blog-content pre code { color: #1e293b; }
+/* 只重置 pre 直接子 code（代码高亮块），不影响嵌套的 inline code */
+.blog-content pre > code { background: none !important; padding: 0; font-size: 14px; color: #c8ccd6; }
+html:not(.dark) .blog-content pre > code { color: #1e293b; }
+/* pre 块内嵌套的 inline code 保持和外面一致的渲染效果 */
+.blog-content pre code code {
+  background: rgba(0,129,192,0.12) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: var(--font-mono);
+  color: #41a1cf !important;
+}
+html:not(.dark) .blog-content pre code code { background: rgba(0,129,192,0.08) !important; }
 /* Inline code within paragraphs — subtle, not highlighter */
 .blog-content p code, .blog-content li code { background: rgba(128,128,128,0.08); color: inherit; padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
 html:not(.dark) .blog-content p code, html:not(.dark) .blog-content li code { background: rgba(0,0,0,0.04); }

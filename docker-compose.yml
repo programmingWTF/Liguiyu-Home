@@ -1,6 +1,10 @@
 services:
+  # ── 公开站点（端口 3090）：liguiyu.com ──
   liguiyu-home:
-    build: .
+    build:
+      context: .
+      args:
+        ADMIN_MODE: "false"
     container_name: liguiyu-home
     restart: unless-stopped
     ports:
@@ -14,3 +18,23 @@ services:
       - AUTH_SECRET=${AUTH_SECRET}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - ADMIN_EMAILS=${ADMIN_EMAILS}
+
+  # ── 管理后台（端口 3091）：Cloudflare Zero Trust 保护，应用层无鉴权 ──
+  liguiyu-admin:
+    build:
+      context: .
+      args:
+        ADMIN_MODE: "true"
+    container_name: liguiyu-admin
+    restart: unless-stopped
+    ports:
+      - "3091:3000"
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - ADMIN_MODE=true
+      - AUTH_SECRET=${AUTH_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}

@@ -16,7 +16,12 @@ interface User {
   created_at: number;
 }
 
-export default function AdminPage() {
+// ── 编译时常量：是否为管理实例（端口 3091） ──
+const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
+
+// ==================== 公开模式（保留原有 NextAuth 登录鉴权） ====================
+
+function PublicAdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [tab, setTab] = useState<"users"|"comments">("users");
@@ -110,6 +115,134 @@ export default function AdminPage() {
   const verifiedUsers = users.filter((u) => u.email_verified).length;
 
   return (
+    <AdminUI
+      headerSub={session?.user?.email || ""}
+      tab={tab}
+      setTab={(t) => { setTab(t); if (t === "comments") fetchComments(); }}
+      users={users}
+      totalUsers={totalUsers}
+      verifiedUsers={verifiedUsers}
+      comments={comments}
+      commentsLoading={commentsLoading}
+      onDeleteUser={handleDelete}
+      onToggleVerify={toggleVerify}
+      onDeleteComment={handleDeleteComment}
+    />
+  );
+}
+
+// ==================== 管理模式（无鉴权，Cloudflare Zero Trust 保护） ====================
+
+function AdminModePage() {
+  const [tab, setTab] = useState<"users"|"comments">("users");
+  const [comments, setComments] = useState<any[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("/api/admin/users");
+      const data = await res.json();
+      setUsers(data.users || []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    setCommentsLoading(true);
+    try {
+      const res = await fetch("/api/admin/comments");
+      const data = await res.json();
+      setComments(data.comments || []);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const handleDeleteComment = async (id: string) => {
+    if (!confirm("删除这条评论？")) return;
+    await fetch("/api/admin/comments", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    setComments((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const handleDelete = async (id: string, email: string) => {
+    if (!confirm(`确定删除用户 ${email}？此操作不可撤销。`)) return;
+    const res = await fetch("/api/admin/users", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    }
+  };
+
+  const toggleVerify = async (id: string, current: number) => {
+    const res = await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, email_verified: current ? 0 : 1 }),
+    });
+    if (res.ok) {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, email_verified: current ? 0 : 1 } : u))
+      );
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#1f1f29" }}>
+        <Loader2 size={32} color="rgba(255,255,255,0.3)" className="animate-spin" />
+      </div>
+    );
+  }
+
+  const totalUsers = users.length;
+  const verifiedUsers = users.filter((u) => u.email_verified).length;
+
+  return (
+    <AdminUI
+      headerSub="受 Cloudflare Zero Trust 保护"
+      tab={tab}
+      setTab={(t) => { setTab(t); if (t === "comments") fetchComments(); }}
+      users={users}
+      totalUsers={totalUsers}
+      verifiedUsers={verifiedUsers}
+      comments={comments}
+      commentsLoading={commentsLoading}
+      onDeleteUser={handleDelete}
+      onToggleVerify={toggleVerify}
+      onDeleteComment={handleDeleteComment}
+    />
+  );
+}
+
+// ==================== 共享 UI 组件 ====================
+
+function AdminUI({
+  headerSub, tab, setTab, users, totalUsers, verifiedUsers,
+  comments, commentsLoading, onDeleteUser, onToggleVerify, onDeleteComment,
+}: {
+  headerSub: string;
+  tab: "users" | "comments";
+  setTab: (t: "users" | "comments") => void;
+  users: User[];
+  totalUsers: number;
+  verifiedUsers: number;
+  comments: any[];
+  commentsLoading: boolean;
+  onDeleteUser: (id: string, email: string) => void;
+  onToggleVerify: (id: string, current: number) => void;
+  onDeleteComment: (id: string) => void;
+}) {
+  return (
     <div className="min-h-screen px-6 py-8" style={{ backgroundColor: "#1f1f29" }}>
       <div className="max-w-[1100px] mx-auto">
         {/* Header */}
@@ -124,7 +257,7 @@ export default function AdminPage() {
                 管理后台
               </h1>
               <p className="text-[14px] mt-1" style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.4)" }}>
-                {session?.user?.email}
+                {headerSub}
               </p>
             </div>
           </div>
@@ -136,7 +269,7 @@ export default function AdminPage() {
             { key: "users" as const, label: "用户管理", icon: Users },
             { key: "comments" as const, label: "评论管理", icon: MessageSquare },
           ].map((t) => (
-            <button key={t.key} onClick={() => { setTab(t.key); if (t.key === "comments") fetchComments(); }}
+            <button key={t.key} onClick={() => setTab(t.key)}
               className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[14px] font-[500] border-none cursor-pointer transition-all"
               style={{ backgroundColor: tab === t.key ? "rgba(0,129,192,0.15)" : "rgba(255,255,255,0.04)", color: tab === t.key ? "#41a1cf" : "rgba(255,255,255,0.4)", fontFamily: "var(--font-body)" }}>
               <t.icon size={15} />{t.label}
@@ -194,7 +327,7 @@ export default function AdminPage() {
                     <td className="px-5 py-3.5 text-[13px]" style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.5)" }}>{user.email}</td>
                     <td className="px-5 py-3.5">
                       <button
-                        onClick={() => toggleVerify(user.id, user.email_verified)}
+                        onClick={() => onToggleVerify(user.id, user.email_verified)}
                         className="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] text-[12px] font-[500] border-none cursor-pointer transition-colors"
                         style={{
                           backgroundColor: user.email_verified ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
@@ -224,7 +357,7 @@ export default function AdminPage() {
                     <td className="px-5 py-3.5">
                       {user.role !== "admin" && (
                         <button
-                          onClick={() => handleDelete(user.id, user.email)}
+                          onClick={() => onDeleteUser(user.id, user.email)}
                           className="p-1.5 rounded-[6px] border-none cursor-pointer transition-colors hover:bg-[rgba(239,68,68,0.1)]"
                           style={{ color: "rgba(255,255,255,0.3)", background: "transparent" }}
                           title="删除用户"
@@ -267,7 +400,7 @@ export default function AdminPage() {
                     <td className="px-5 py-3.5 text-[13px] max-w-[300px] truncate" style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.5)" }}>{c.content}</td>
                     <td className="px-5 py-3.5 text-[12px]" style={{ fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.3)" }}>{new Date(c.created_at * 1000).toLocaleDateString("zh-CN")}</td>
                     <td className="px-5 py-3.5">
-                      <button onClick={() => handleDeleteComment(c.id)} className="p-1.5 rounded-[6px] border-none cursor-pointer transition-colors hover:bg-[rgba(239,68,68,0.1)]" style={{ color: "rgba(255,255,255,0.3)", background: "transparent" }}><Trash2 size={15} /></button>
+                      <button onClick={() => onDeleteComment(c.id)} className="p-1.5 rounded-[6px] border-none cursor-pointer transition-colors hover:bg-[rgba(239,68,68,0.1)]" style={{ color: "rgba(255,255,255,0.3)", background: "transparent" }}><Trash2 size={15} /></button>
                     </td>
                   </tr>
                 ))}
@@ -281,4 +414,13 @@ export default function AdminPage() {
       </div>
     </div>
   );
+}
+
+// ==================== 入口组件 ====================
+
+export default function AdminPage() {
+  if (isAdminMode) {
+    return <AdminModePage />;
+  }
+  return <PublicAdminPage />;
 }

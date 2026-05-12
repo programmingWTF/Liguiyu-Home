@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono, Lora } from "next/font/google";
+import { Geist_Mono, Fraunces } from "next/font/google";
 import Providers from "./components/Providers";
 import "./globals.css";
 
-const lora = Lora({
+const fraunces = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
-});
-
-const inter = Inter({
-  variable: "--font-body",
-  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
@@ -41,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${lora.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

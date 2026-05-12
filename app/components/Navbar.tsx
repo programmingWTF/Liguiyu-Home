@@ -203,6 +203,9 @@ export default function Navbar() {
 }
 
 function AuthButton({ useLightText }: { useLightText: boolean }) {
+  // 管理实例无 SessionProvider，不渲染登录按钮
+  if (process.env.NEXT_PUBLIC_ADMIN_MODE === "true") return null;
+
   const { data: session, status } = useSession();
 
   if (status === "loading") return null;
