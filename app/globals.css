@@ -233,6 +233,46 @@ html:not(.dark) .blog-content code { background: rgba(0,129,192,0.08); }
 .blog-content pre::-webkit-scrollbar-thumb, .blog-content .table-wrapper::-webkit-scrollbar-thumb, .blog-page pre::-webkit-scrollbar-thumb { background: rgba(0,129,192,0.3); border-radius: 3px; }
 .blog-content pre::-webkit-scrollbar-thumb:hover, .blog-content .table-wrapper::-webkit-scrollbar-thumb:hover, .blog-page pre::-webkit-scrollbar-thumb:hover { background: rgba(0,129,192,0.55); }
 html:not(.dark) .blog-content pre { background: #f1f5f9; border: 1px solid #e2e8f0; }
+/* Code copy button — anchored inside .code-wrapper */
+.blog-content .code-copy-btn {
+  position: absolute; top: 10px; right: 10px;
+  padding: 4px 12px; font-size: 0.78rem; border-radius: 6px;
+  background: rgba(0,129,192,0.08);
+  border: 1px solid rgba(0,129,192,0.2);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer; backdrop-filter: blur(4px);
+  transition: all 0.25s ease; z-index: 1;
+  font-family: var(--font-body); line-height: 1.5;
+}
+.blog-content .code-copy-btn:hover {
+  background: rgba(0,129,192,0.18);
+  color: #41a1cf;
+  border-color: #41a1cf;
+  box-shadow: 0 0 12px rgba(0,129,192,0.25);
+}
+.blog-content .code-copy-btn.copied {
+  color: #41a1cf;
+  border-color: #41a1cf;
+  background: rgba(0,129,192,0.15);
+  box-shadow: 0 0 14px rgba(0,129,192,0.35);
+}
+html:not(.dark) .blog-content .code-copy-btn {
+  background: rgba(0,129,192,0.04);
+  border-color: rgba(0,129,192,0.12);
+  color: rgba(0,0,0,0.4);
+}
+html:not(.dark) .blog-content .code-copy-btn:hover {
+  background: rgba(0,129,192,0.1);
+  color: #0081c0;
+  border-color: #0081c0;
+  box-shadow: 0 0 12px rgba(0,129,192,0.18);
+}
+html:not(.dark) .blog-content .code-copy-btn.copied {
+  color: #0081c0;
+  border-color: #0081c0;
+  background: rgba(0,129,192,0.08);
+  box-shadow: 0 0 14px rgba(0,129,192,0.25);
+}
 /* 只重置 pre 直接子 code（代码高亮块），不影响嵌套的 inline code */
 .blog-content pre > code { background: none !important; padding: 0; font-size: 14px; color: #c8ccd6; }
 html:not(.dark) .blog-content pre > code { color: #1e293b; }

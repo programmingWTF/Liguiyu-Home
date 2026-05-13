@@ -1,20 +1,17 @@
 "use client";
 
-import { useMotionValue, useSpring, motion, useTransform } from "framer-motion";
+import { useMotionValue, motion, useTransform } from "framer-motion";
 import { useEffect } from "react";
 
 /**
- * One continuous mouse-following glow across the entire page.
- * No seams — just one big light that follows the cursor everywhere.
+ * Mouse-following glow — instant follow, no spring lag.
  */
 export default function PageGlow() {
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
-  const sx = useSpring(mx, { stiffness: 80, damping: 30 });
-  const sy = useSpring(my, { stiffness: 80, damping: 30 });
 
-  const glowX = useTransform(sx, (v) => v * 100);
-  const glowY = useTransform(sy, (v) => v * 100);
+  const glowX = useTransform(mx, (v) => v * 100);
+  const glowY = useTransform(my, (v) => v * 100);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
