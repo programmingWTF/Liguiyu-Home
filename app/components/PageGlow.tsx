@@ -4,7 +4,8 @@ import { useMotionValue, motion, useTransform } from "framer-motion";
 import { useEffect } from "react";
 
 /**
- * Mouse-following glow — instant follow, no spring lag.
+ * Single smooth blue glow via screen blend.
+ * Uses a pale blue-white so text near the cursor becomes visibly lighter.
  */
 export default function PageGlow() {
   const mx = useMotionValue(0.5);
@@ -25,7 +26,7 @@ export default function PageGlow() {
   return (
     <motion.div
       className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: 2 }}
+      style={{ zIndex: 2, mixBlendMode: "screen" } as any}
     >
       <motion.div
         className="absolute inset-0"
@@ -33,7 +34,7 @@ export default function PageGlow() {
           background: useTransform(
             [glowX, glowY],
             ([x, y]: number[]) =>
-              `radial-gradient(700px circle at ${x}% ${y}%, rgba(0,129,192,0.16) 0%, transparent 60%)`
+              `radial-gradient(600px circle at ${x}% ${y}%, rgba(70,140,210,0.24) 0%, rgba(40,110,190,0.08) 50%, transparent 75%)`
           ),
         } as any}
       />

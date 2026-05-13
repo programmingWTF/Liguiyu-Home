@@ -47,11 +47,20 @@ export default function BlogListClient({ posts }: { posts: PostMeta[] }) {
         )}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <AnimatePresence mode="popLayout">
         {filtered.map((post) => (
-          <motion.div key={post.slug} layout initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.95 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
-          <Link href={`/blog/${post.slug}`} className="block rounded-[16px] p-6 no-underline transition-all hover:scale-[1.01] card-surface">
+          <motion.div
+            key={post.slug}
+            layout
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ scale: 1.02, y: -4, zIndex: 10 }}
+            style={{ position: "relative", zIndex: 1 }}
+          >
+          <Link href={`/blog/${post.slug}`} className="block rounded-[16px] p-6 no-underline card-surface blog-card-link">
             <div className="text-[12px] font-[500] mb-2 text-muted" style={{ fontFamily: "var(--font-mono)" }}>{post.date}</div>
             <h2 className="text-sub text-[20px] font-[600] mb-2" style={{ fontFamily: "var(--font-body)" }}>{post.title}</h2>
             <p className="text-body text-[15px] leading-relaxed line-clamp-2" style={{ fontFamily: "var(--font-body)" }}>{post.description}</p>

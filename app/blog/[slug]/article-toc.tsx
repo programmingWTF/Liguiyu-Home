@@ -44,13 +44,16 @@ export default function ArticleToc({ html }: { html: string }) {
 
   return (
     <>
-      <button onClick={() => setOpen(!open)}
-        className="fixed z-50 w-8 h-8 rounded-[8px] border-none cursor-pointer flex items-center justify-center transition-all"
-        style={{ left: open ? 220 : 0, top: "50%", transform: "translateY(-50%)", backgroundColor: "rgba(0,129,192,0.15)", color: "#41a1cf" }}>
+      <motion.button
+        animate={{ left: open ? 220 : 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        onClick={() => setOpen(!open)}
+        className="toc-toggle-btn fixed z-50 w-9 h-9 rounded-[8px] border-none cursor-pointer flex items-center justify-center"
+        style={{ top: "50%", transform: "translateY(-50%)" }}>
         <motion.span animate={{ rotate: open ? 0 : 180 }} transition={{ duration: 0.3 }} style={{ display: "flex" }}>
           <ChevronLeft size={14} />
         </motion.span>
-      </button>
+      </motion.button>
       <AnimatePresence>
         {open && (
           <motion.aside initial={{ x: -260, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -260, opacity: 0 }}
