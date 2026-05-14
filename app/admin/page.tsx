@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Shield, Users, Trash2, CheckCircle, XCircle, Loader2, ArrowLeft, MessageSquare } from "lucide-react";
+import { Shield, Users, Trash2, CheckCircle, XCircle, Loader2, ArrowLeft, MessageSquare, FileText } from "lucide-react";
 import Link from "next/link";
+import ArticleManager from "./ArticleManager";
 
 interface User {
   id: string;
@@ -24,7 +25,7 @@ const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
 function PublicAdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [tab, setTab] = useState<"users"|"comments">("users");
+  const [tab, setTab] = useState<"users"|"comments"|"articles">("users");
   const [comments, setComments] = useState<any[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -134,7 +135,7 @@ function PublicAdminPage() {
 // ==================== 管理模式（无鉴权，Cloudflare Zero Trust 保护） ====================
 
 function AdminModePage() {
-  const [tab, setTab] = useState<"users"|"comments">("users");
+  const [tab, setTab] = useState<"users"|"comments"|"articles">("users");
   const [comments, setComments] = useState<any[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -231,8 +232,8 @@ function AdminUI({
   comments, commentsLoading, onDeleteUser, onToggleVerify, onDeleteComment,
 }: {
   headerSub: string;
-  tab: "users" | "comments";
-  setTab: (t: "users" | "comments") => void;
+  tab: "users" | "comments" | "articles";
+  setTab: (t: "users" | "comments" | "articles") => void;
   users: User[];
   totalUsers: number;
   verifiedUsers: number;
@@ -268,6 +269,7 @@ function AdminUI({
           {[
             { key: "users" as const, label: "用户管理", icon: Users },
             { key: "comments" as const, label: "评论管理", icon: MessageSquare },
+            { key: "articles" as const, label: "文章管理", icon: FileText },
           ].map((t) => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[14px] font-[500] border-none cursor-pointer transition-all"
@@ -409,6 +411,12 @@ function AdminUI({
             </table>
           </div>
           )}
+        </motion.div>
+        )}
+
+        {tab === "articles" && (
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <ArticleManager />
         </motion.div>
         )}
       </div>

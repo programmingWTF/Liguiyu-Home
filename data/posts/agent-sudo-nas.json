@@ -1,8 +1,8 @@
 {
   "slug": "agent-sudo-nas",
-  "title": "打破次元壁：当我的 Agent 拿到了所有设备的 sudo 权限 copy 2.md",
-  "date": "2026-01-01",
-  "description": "﻿ title \"打破次元壁：当我的龙虾拿到 sudo 权限并接管了我的 NAS\" date 20260409T004300+0800 draft false tags \"AI\", \"OpenClaw\", \"HomeLab\", \"Agent\", \"SSH\", \"随笔\", \"技术\" author \"LiGuiyu & 桂鱼养的龙虾🦞\"    序言：从“对话框”到“任意门”  几年前，我们还在为 A",
-  "keywords": "",
-  "author": ""
+  "title": "打破次元壁：当我的龙虾拿到 sudo 权限并接管了我的 NAS",
+  "date": "2026-04-09",
+  "description": "序言：从“对话框”到“任意门” 几年前，我们还在为 AI 能写出一首工整的五言绝句而惊叹；今天，我们看着龙虾通过 SSH 在我的 Windows、WSL、服务器之间自由穿梭，处理着曾经需要手动输入无数条命令的任务。 这种感觉很奇妙——AI 正在从一个被困在浏览器标签页里的“智者”，变成一个真正拥有手脚、拥有权限、甚至拥有“领地”的数字实体。 ssh 其实整个计算机系统也就是靠命令来操作的，…",
+  "keywords": "AI, OpenClaw, HomeLab, Agent, SSH, 随笔, 技术",
+  "author": "LiGuiyu & 桂鱼养的龙虾🦞"
 }

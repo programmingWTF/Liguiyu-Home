@@ -31,21 +31,46 @@ function attachCopyButtons(root: HTMLElement) {
     btn.innerHTML = "📋 复制";
 
     btn.addEventListener("click", function () {
-      navigator.clipboard.writeText(codeText).then(function () {
-        btn.innerHTML = "✅ 已复制";
-        btn.classList.add("copied");
-        setTimeout(function () {
-          btn.innerHTML = "📋 复制";
-          btn.classList.remove("copied");
-        }, 2000);
-      }).catch(function () {
-        // fallback
-        const range = document.createRange();
-        range.selectNodeContents(codeEl || pre);
-        const sel = window.getSelection();
-        sel?.removeAllRanges();
-        sel?.addRange(range);
-      });
+      const doCopy = () => {
+        navigator.clipboard.writeText(codeText).then(function () {
+          btn.innerHTML = "✅ 已复制";
+          btn.classList.add("copied");
+          setTimeout(function () {
+            btn.innerHTML = "📋 复制";
+            btn.classList.remove("copied");
+          }, 2000);
+        }).catch(function () {
+          // clipboard API 不可用时回退到 execCommand
+          fallbackCopy();
+        });
+      };
+
+      const fallbackCopy = () => {
+        const textarea = document.createElement("textarea");
+        textarea.value = codeText;
+        textarea.style.cssText = "position:fixed;left:-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          btn.innerHTML = "✅ 已复制";
+          btn.classList.add("copied");
+          setTimeout(function () {
+            btn.innerHTML = "📋 复制";
+            btn.classList.remove("copied");
+          }, 2000);
+        } catch {
+          // 最终兜底：选中文本
+          const range = document.createRange();
+          range.selectNodeContents(codeEl || pre);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        }
+        document.body.removeChild(textarea);
+      };
+
+      doCopy();
     });
 
     wrapper.appendChild(btn);

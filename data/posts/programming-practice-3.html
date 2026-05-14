@@ -1,23 +1,20 @@
-<blockquote><p>今天的实训题目聚焦于<strong>深度优先搜索 (DFS)</strong> 及其应用。从基础的排列组合到经典的 N 皇后，再到迷宫寻路，全方位考察了对递归回溯过程的理解。</p><p>本文由 <strong>龙虾🦞</strong> 负责思路解析与文案撰写，<strong>LiGuiyu</strong> 负责代码审核与逻辑校对。</p><p><strong>声明：代码仅供思路参考，请勿直接搬运。</strong></p></blockquote>
-
-<h1>程序设计实训 — 题目解析 (2026.04.15)</h1>
-
-<h2 id="题目 1：输出所有排列">题目 1：输出所有排列</h2>
-
+<blockquote>
+<p>今天的实训题目聚焦于<strong>深度优先搜索 (DFS)</strong> 及其应用。从基础的排列组合到经典的 N 皇后，再到迷宫寻路，全方位考察了对递归回溯过程的理解。</p>
+<p>本文由 <strong>龙虾🦞</strong> 负责思路解析与文案撰写，<strong>LiGuiyu</strong> 负责代码审核与逻辑校对。</p>
+<p><strong>声明：代码仅供思路参考，请勿直接搬运。</strong></p>
+</blockquote>
+<h1 id="程序设计实训-题目解析-2026-04-15">程序设计实训 — 题目解析 (2026.04.15)</h1>
+<h2 id="题目-1-输出所有排列">题目 1：输出所有排列</h2>
 <h3 id="题目要点">题目要点</h3>
-
-从 $1 \sim n$ 中分别取出 $1, 2, \dots, m$ 个数的所有排列，并按字典序递增输出。
-
+<p>从 $1 \sim n$ 中分别取出 $1, 2, \dots, m$ 个数的所有排列，并按字典序递增输出。</p>
 <h3 id="思路解析">思路解析</h3>
-
-这是一个典型的<strong>排列生成</strong>问题。由于要求从小到大取出不同个数的数字，我们可以通过控制 DFS 的深度来解决。
-
-- 使用一个布尔数组 <code>jsq</code> (标记数组) 来记录哪些数字已经被使用。
-- 使用一个数组 <code>ans</code> 来存储当前的排列路径。
-- 每次进入 <code>dfs</code> 时，先输出当前的路径（满足取出 $1 \sim m$ 个数的要求），然后继续向下尝试添加新的数字。
-
+<p>这是一个典型的<strong>排列生成</strong>问题。由于要求从小到大取出不同个数的数字，我们可以通过控制 DFS 的深度来解决。</p>
+<ul>
+<li>使用一个布尔数组 <code>jsq</code> (标记数组) 来记录哪些数字已经被使用。</li>
+<li>使用一个数组 <code>ans</code> 来存储当前的排列路径。</li>
+<li>每次进入 <code>dfs</code> 时，先输出当前的路径（满足取出 $1 \sim m$ 个数的要求），然后继续向下尝试添加新的数字。</li>
+</ul>
 <h3 id="参考实现">参考实现</h3>
-
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 
 #define int long long
@@ -32,9 +29,9 @@ void dfs(int depth) {
     // 每次进入先输出当前已选的排列（对应取出 depth 个数的情况）
     if (depth &gt; 0) {
         for (int i = 0; i &lt; depth; ++i) {
-            cout &lt;&lt; path[i] &lt;&lt; (i == depth - 1 ? "" : " ");
+            cout &lt;&lt; path[i] &lt;&lt; (i == depth - 1 ? &quot;&quot; : &quot; &quot;);
         }
-        cout &lt;&lt; " \n"; // 注意题目要求行末有空格
+        cout &lt;&lt; &quot; \n&quot;; // 注意题目要求行末有空格
     }
 
     if (depth == m) return;
@@ -56,25 +53,19 @@ signed main() {
     return 0;
 }
 </code></pre>
-
 <hr>
-<h2 id="题目 2：爬山">题目 2：爬山</h2>
-
-<h3 id="题目要点-dup-1">题目要点</h3>
-
-在一个二维高度数组中，找一条最长的路径，使得路径上的点高度不减（可以相等），且不能重复经过同一个点。
-
-<h3 id="思路解析-dup-1">思路解析</h3>
-
-这是一个带有<strong>记忆化搜索</strong>色彩的 DFS 问题。
-
-- 目标：求从任意一点出发的最长路径。
-- 约束：只能向上下左右移动，且高度 $H_{next} \ge H_{now}$。
-- 虽然题目说可以绕圈，但高度不减且不能重复经过点，实际上限制了路径的增长。
-- 我们可以对每个点 $(i, j)$ 进行 DFS，求出以它为起点的最长路径长度。
-
-<h3 id="参考实现-dup-1">参考实现</h3>
-
+<h2 id="题目-2-爬山">题目 2：爬山</h2>
+<h3 id="题目要点">题目要点</h3>
+<p>在一个二维高度数组中，找一条最长的路径，使得路径上的点高度不减（可以相等），且不能重复经过同一个点。</p>
+<h3 id="思路解析">思路解析</h3>
+<p>这是一个带有<strong>记忆化搜索</strong>色彩的 DFS 问题。</p>
+<ul>
+<li>目标：求从任意一点出发的最长路径。</li>
+<li>约束：只能向上下左右移动，且高度 $H_{next} \ge H_{now}$。</li>
+<li>虽然题目说可以绕圈，但高度不减且不能重复经过点，实际上限制了路径的增长。</li>
+<li>我们可以对每个点 $(i, j)$ 进行 DFS，求出以它为起点的最长路径长度。</li>
+</ul>
+<h3 id="参考实现">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;algorithm&gt;
 
@@ -120,25 +111,21 @@ int main() {
     return 0;
 }
 </code></pre>
-
 <hr>
-<h2 id="题目 3：N 皇后">题目 3：N 皇后</h2>
-
-<h3 id="题目要点-dup-2">题目要点</h3>
-
-在 $n \times n$ 棋盘放 $n$ 个皇后，使其互不攻击。输出前 100 个解及总数。
-
-<h3 id="思路解析-dup-2">思路解析</h3>
-
-经典的<strong>回溯法</strong>题目。核心在于判断冲突：
-
-1. <strong>同行/同列</strong>：通过 DFS 的行递归保证行不冲突，用布尔数组 <code>col[]</code> 保证列不冲突。
-2. <strong>对角线</strong>：
-   - 主对角线：行索引减列索引为常数（$i - j = const$），为避免负数加个偏置 $n$。
-   - 副对角线：行索引加列索引为常数（$i + j = const$）。
-
-<h3 id="参考实现-dup-2">参考实现</h3>
-
+<h2 id="题目-3-n-皇后">题目 3：N 皇后</h2>
+<h3 id="题目要点">题目要点</h3>
+<p>在 $n \times n$ 棋盘放 $n$ 个皇后，使其互不攻击。输出前 100 个解及总数。</p>
+<h3 id="思路解析">思路解析</h3>
+<p>经典的<strong>回溯法</strong>题目。核心在于判断冲突：</p>
+<ol>
+<li><strong>同行/同列</strong>：通过 DFS 的行递归保证行不冲突，用布尔数组 <code>col[]</code> 保证列不冲突。</li>
+<li><strong>对角线</strong>：<ul>
+<li>主对角线：行索引减列索引为常数（$i - j = const$），为避免负数加个偏置 $n$。</li>
+<li>副对角线：行索引加列索引为常数（$i + j = const$）。</li>
+</ul>
+</li>
+</ol>
+<h3 id="参考实现">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 
@@ -151,7 +138,7 @@ bool col[15], d1[30], d2[30];
 void dfs(int r) {
     if (r == n) {
         if (tot &lt; 100) {
-            for (int i = 0; i &lt; n; i++) cout &lt;&lt; pos[i] &lt;&lt; (i == n - 1 ? "" : " ");
+            for (int i = 0; i &lt; n; i++) cout &lt;&lt; pos[i] &lt;&lt; (i == n - 1 ? &quot;&quot; : &quot; &quot;);
             cout &lt;&lt; endl;
         }
         tot++;
@@ -175,24 +162,18 @@ int main() {
     return 0;
 }
 </code></pre>
-
 <hr>
-<h2 id="题目 4：寻径指津">题目 4：寻径指津</h2>
-
-<h3 id="题目要点-dup-3">题目要点</h3>
-
-迷宫寻路，特殊规则：每次移动会一直滑到碰到墙壁为止。求在 $k$ 次移动内到达出口的路径（WASD表示）。
-
-<h3 id="思路解析-dup-3">思路解析</h3>
-
-这是一个<strong>带有步数限制的 DFS</strong>。
-
-- 关键点：移动不是走一格，而是“一滑到底”。
-- 使用 <code>visited[x][y][step]</code> 记录状态，防止在同一移动次数下重复访问同一个点，避免死循环。
-- 每到一个方向，用 <code>while</code> 循环模拟滑动过程，如果滑动途中经过出口 'E'，则成功。
-
-<h3 id="参考实现-dup-3">参考实现</h3>
-
+<h2 id="题目-4-寻径指津">题目 4：寻径指津</h2>
+<h3 id="题目要点">题目要点</h3>
+<p>迷宫寻路，特殊规则：每次移动会一直滑到碰到墙壁为止。求在 $k$ 次移动内到达出口的路径（WASD表示）。</p>
+<h3 id="思路解析">思路解析</h3>
+<p>这是一个<strong>带有步数限制的 DFS</strong>。</p>
+<ul>
+<li>关键点：移动不是走一格，而是“一滑到底”。</li>
+<li>使用 <code>visited[x][y][step]</code> 记录状态，防止在同一移动次数下重复访问同一个点，避免死循环。</li>
+<li>每到一个方向，用 <code>while</code> 循环模拟滑动过程，如果滑动途中经过出口 &#39;E&#39;，则成功。</li>
+</ul>
+<h3 id="参考实现">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 
@@ -202,8 +183,8 @@ int n, m, k;
 char g[105][105];
 bool vis[105][105][11];
 int dx[] = {-1, 1, 0, 0}, dy[] = {0, 0, -1, 1};
-char dc[] = {'W', 'S', 'A', 'D'};
-string res = "";
+char dc[] = {&#39;W&#39;, &#39;S&#39;, &#39;A&#39;, &#39;D&#39;};
+string res = &quot;&quot;;
 
 bool dfs(int x, int y, int step) {
     if (step &gt;= k) return false;
@@ -216,9 +197,9 @@ bool dfs(int x, int y, int step) {
         // 一滑到底
         while (true) {
             int tx = nx + dx[i], ty = ny + dy[i];
-            if (tx &lt; 0 || tx &gt;= n || ty &lt; 0 || ty &gt;= m || g[tx][ty] == '#') break;
+            if (tx &lt; 0 || tx &gt;= n || ty &lt; 0 || ty &gt;= m || g[tx][ty] == &#39;#&#39;) break;
             nx = tx; ny = ty;
-            if (g[nx][ny] == 'E') { foundE = true; break; }
+            if (g[nx][ny] == &#39;E&#39;) { foundE = true; break; }
         }
 
         if (foundE) {
@@ -240,17 +221,14 @@ int main() {
     for (int i = 0; i &lt; n; i++) {
         for (int j = 0; j &lt; m; j++) {
             cin &gt;&gt; g[i][j];
-            if (g[i][j] == 'S') { sx = i; sy = j; }
+            if (g[i][j] == &#39;S&#39;) { sx = i; sy = j; }
         }
     }
     if (dfs(sx, sy, 0)) cout &lt;&lt; res &lt;&lt; endl;
     return 0;
 }
 </code></pre>
-
 <hr>
 <h2 id="结语">结语</h2>
-
-今天这四道题涵盖了 DFS 的几个核心应用场景：生成、求最长路径、回溯约束以及带限制的搜索。
-
-特别是第四题，这种“一滑到底”的物理规则在很多游戏（如《推箱子》或某些迷宫关卡）中都很常见，理解状态空间（位置+步数）是解题的关键。🦞
+<p>今天这四道题涵盖了 DFS 的几个核心应用场景：生成、求最长路径、回溯约束以及带限制的搜索。</p>
+<p>特别是第四题，这种“一滑到底”的物理规则在很多游戏（如《推箱子》或某些迷宫关卡）中都很常见，理解状态空间（位置+步数）是解题的关键。🦞</p>
