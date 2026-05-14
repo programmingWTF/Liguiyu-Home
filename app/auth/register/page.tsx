@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, User, Hash, ArrowRight, Loader2, Send } from "lucide-react";
+import { Mail, Lock, User, Hash, ArrowRight, Loader2, Send, ShieldCheck, UserPlus } from "lucide-react";
 import Link from "next/link";
 
 export default function RegisterPage() {
@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ export default function RegisterPage() {
     if (step === "form") {
       if (!email || !password) return;
       if (password.length < 6) { setError("密码至少 6 位"); return; }
+      if (password !== confirmPassword) { setError("两次输入的密码不一致"); return; }
       setStep("verify");
       setError("");
       sendCode();
@@ -119,6 +121,16 @@ export default function RegisterPage() {
                   <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className={inputClass} style={{ fontFamily: "var(--font-body)" }} />
                 </div>
               </div>
+              <div>
+                <label className={labelClass} style={{ color: "rgba(222,226,222,0.6)", fontFamily: "var(--font-body)" }}>确认密码</label>
+                <div className="relative"><ShieldCheck size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "rgba(222,226,222,0.3)" }} />
+                  <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required placeholder="再次输入密码" className={inputClass}
+                    style={{ fontFamily: "var(--font-body)", borderColor: confirmPassword && password !== confirmPassword ? "rgba(239,68,68,0.4)" : undefined }} />
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-[12px] mt-1.5" style={{ color: "rgba(239,68,68,0.7)", fontFamily: "var(--font-body)" }}>两次输入的密码不一致</p>
+                )}
+              </div>
             </>
           ) : (
             <div>
@@ -149,10 +161,15 @@ export default function RegisterPage() {
           )}
 
           <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-            className="w-full py-2.5 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 24px rgba(0,129,192,0.25)" }}>
-            {loading ? <Loader2 size={18} className="animate-spin" /> : step === "form" ? "下一步" : "完成注册"}
-            {!loading && <ArrowRight size={16} />}
+            className="w-full py-3 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2.5 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
+            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(0,129,192,0.3)" }}>
+            {loading ? (
+              <><Loader2 size={18} className="animate-spin" /> 注册中…</>
+            ) : step === "form" ? (
+              <><ArrowRight size={17} /> 下一步</>
+            ) : (
+              <><UserPlus size={17} /> 完成注册</>
+            )}
           </motion.button>
         </form>
 

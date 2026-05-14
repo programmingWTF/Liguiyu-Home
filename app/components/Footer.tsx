@@ -57,10 +57,7 @@ export default function Footer() {
 
         <div className="w-full pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: "1px solid rgba(222,226,222,0.08)" }}>
           <span className="text-[13px] font-[400]" style={{ fontFamily: "var(--font-body)", color: "rgba(222,226,222,0.4)" }}>
-            liguiyu.com © {new Date().getFullYear()}
-          </span>
-          <span className="text-[13px] font-[400]" style={{ fontFamily: "var(--font-body)", color: "rgba(222,226,222,0.3)" }}>
-            部署在宿舍 NAS · Cloudflare 全球加速
+            liguiyu.com © {new Date().getFullYear()} All Rights Reserved
           </span>
         </div>
       </div>

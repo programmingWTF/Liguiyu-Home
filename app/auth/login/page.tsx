@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
-import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2, LogIn } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -83,10 +83,13 @@ export default function LoginPage() {
           </div>
           {error && <p className="text-[13px] text-red-400 text-center" style={{ fontFamily: "var(--font-body)" }}>{error}</p>}
           <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-            className="w-full py-2.5 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 24px rgba(0,129,192,0.25)" }}>
-            {loading ? <Loader2 size={18} className="animate-spin" /> : "登录"}
-            {!loading && <ArrowRight size={16} />}
+            className="w-full py-3 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2.5 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
+            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(0,129,192,0.3)" }}>
+            {loading ? (
+              <><Loader2 size={18} className="animate-spin" /> 登录中…</>
+            ) : (
+              <><LogIn size={17} /> 登录账户</>
+            )}
           </motion.button>
         </form>
         <p className="mt-6 text-center text-[14px]" style={{ fontFamily: "var(--font-body)", color: "rgba(222,226,222,0.4)" }}>

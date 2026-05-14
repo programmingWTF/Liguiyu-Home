@@ -223,7 +223,7 @@ function AuthButton({ useLightText }: { useLightText: boolean }) {
           {session.user.name}
         </span>
         <button
-          onClick={() => signOut()}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className="px-3 py-[6px] rounded-[8px] text-[13px] font-[400] border-none cursor-pointer transition-colors"
           style={{
             backgroundColor: useLightText ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
@@ -240,14 +240,24 @@ function AuthButton({ useLightText }: { useLightText: boolean }) {
   return (
     <a
       href="/auth/login"
-      className="relative z-10 flex items-center gap-1.5 px-3 py-[6px] rounded-[8px] text-[14px] font-[400] no-underline transition-colors ml-1"
+      className="relative z-10 flex items-center gap-1.5 px-4 py-[6px] rounded-[8px] text-[13px] font-[500] no-underline transition-all ml-1"
       style={{
-        color: useLightText ? "rgba(255,255,255,0.7)" : "#444141",
+        color: useLightText ? "#ffffff" : "#0f172a",
         fontFamily: "var(--font-body)",
+        backgroundColor: useLightText ? "rgba(0,129,192,0.2)" : "rgba(0,129,192,0.08)",
+        border: useLightText ? "1px solid rgba(0,129,192,0.25)" : "1px solid rgba(0,129,192,0.12)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = useLightText ? "rgba(0,129,192,0.35)" : "rgba(0,129,192,0.15)";
+        e.currentTarget.style.boxShadow = "0 0 16px rgba(0,129,192,0.2)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = useLightText ? "rgba(0,129,192,0.2)" : "rgba(0,129,192,0.08)";
+        e.currentTarget.style.boxShadow = "none";
       }}
     >
       <LogIn size={14} />
-      登录
+      登录账户
     </a>
   );
 }

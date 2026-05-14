@@ -49,9 +49,36 @@ export default function Blog({ posts }: { posts: PostMeta[] }) {
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ duration: 0.4, delay: 0.6 }} className="mt-10 text-center">
-          <Link href="/blog" className="inline-flex items-center gap-2 text-[16px] font-[500] no-underline transition-colors hover:text-[#0081c0]" style={{ fontFamily: "var(--font-body)", color: "var(--color-medium-gray)" }}>
-            阅读更多文章 →
-          </Link>
+          <motion.div
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            style={{ display: "inline-block" }}
+          >
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2.5 px-6 py-3 rounded-[12px] text-[15px] font-[500] no-underline transition-all"
+              style={{
+                fontFamily: "var(--font-body)",
+                color: "#41a1cf",
+                backgroundColor: "rgba(0,129,192,0.06)",
+                border: "1px solid rgba(0,129,192,0.15)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0,129,192,0.14)";
+                e.currentTarget.style.borderColor = "rgba(0,129,192,0.35)";
+                e.currentTarget.style.boxShadow = "0 0 24px rgba(0,129,192,0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0,129,192,0.06)";
+                e.currentTarget.style.borderColor = "rgba(0,129,192,0.15)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              阅读更多文章
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     </InteractiveSection>

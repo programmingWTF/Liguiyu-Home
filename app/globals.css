@@ -312,13 +312,13 @@ html:not(.dark) .blog-content p code, html:not(.dark) .blog-content li code { ba
 .blog-content th { background: rgba(0,129,192,0.1); padding: 10px 14px; text-align: left; font-size: 14px; font-weight: 600; border: 1px solid rgba(255,255,255,0.06); color: #41a1cf; }
 .blog-content td { padding: 8px 14px; border: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
 html:not(.dark) .blog-content td { border: 1px solid rgba(0,0,0,0.04); }
-.blog-content a, article a {
+.blog-content a {
   position: relative;
   color: #41a1cf;
   text-decoration: none;
   transition: color 0.2s ease, transform 0.2s ease;
 }
-.blog-content a::after, article a::after {
+.blog-content a::after {
   content: "";
   position: absolute;
   left: 0;
@@ -330,11 +330,11 @@ html:not(.dark) .blog-content td { border: 1px solid rgba(0,0,0,0.04); }
   display: block;
   pointer-events: none;
 }
-.blog-content a:hover, article a:hover {
+.blog-content a:hover {
   color: #5eb8e6;
   transform: translateY(-1px);
 }
-.blog-content a:hover::after, article a:hover::after {
+.blog-content a:hover::after {
   width: 100%;
 }
 .blog-content img { max-width: 100%; border-radius: 12px; margin: 16px 0; }

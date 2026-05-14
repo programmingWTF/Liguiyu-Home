@@ -15,9 +15,8 @@ services:
       - .env.production
     environment:
       - NODE_ENV=production
-      - AUTH_SECRET=${AUTH_SECRET}
-      - RESEND_API_KEY=${RESEND_API_KEY}
-      - ADMIN_EMAILS=${ADMIN_EMAILS}
+      - ADMIN_EMAILS=3477492305@qq.com
+      - AUTH_URL=https://www.liguiyu.com
 
   # ── 管理后台（端口 3091）：Cloudflare Zero Trust 保护，应用层无鉴权 ──
   liguiyu-admin:
@@ -36,5 +35,3 @@ services:
     environment:
       - NODE_ENV=production
       - ADMIN_MODE=true
-      - AUTH_SECRET=${AUTH_SECRET}
-      - RESEND_API_KEY=${RESEND_API_KEY}
