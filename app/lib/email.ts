@@ -31,7 +31,7 @@ export async function sendVerificationEmail(
           .email-box { background:#1f1f29; border-radius:16px; }
           .email-title { color:#fff; }
           .email-desc { color:rgba(255,255,255,0.6); }
-          .email-code-bg { background:rgba(0,129,192,0.1); border:1px solid rgba(0,129,192,0.2); }
+          .email-code-bg { background:rgba(217,119,87,0.1); border:1px solid rgba(217,119,87,0.2); }
           .email-code-label { color:rgba(255,255,255,0.5); }
           .email-code { color:#fff; }
           .email-hint { color:rgba(255,255,255,0.35); }
@@ -39,20 +39,20 @@ export async function sendVerificationEmail(
             .email-box { background:#f8f9fa; border:1px solid #e2e8f0; }
             .email-title { color:#0f172a; }
             .email-desc { color:rgba(15,23,42,0.6); }
-            .email-code-bg { background:rgba(0,129,192,0.06); border:1px solid rgba(0,129,192,0.12); }
+            .email-code-bg { background:rgba(217,119,87,0.06); border:1px solid rgba(217,119,87,0.12); }
             .email-code-label { color:rgba(15,23,42,0.5); }
             .email-code { color:#0f172a; }
             .email-hint { color:rgba(15,23,42,0.35); }
           }
         </style></head>
         <body style="margin:0;padding:0">
-        <div style="max-width:480px;margin:0 auto;font-family:system-ui,sans-serif">
+        <div style="max-width:480px;margin:0 auto;font-family:"Noto Serif SC","Source Han Serif SC","Source Han Serif",serif">
           <div class="email-box" style="padding:32px;text-align:center">
             <h1 class="email-title" style="font-size:24px;margin:0 0 8px">liguiyu.com</h1>
             <p class="email-desc" style="font-size:15px;margin:0 0 24px">
               感谢注册！请点击下方按钮验证你的邮箱地址。
             </p>
-            <a href="${verifyUrl}" style="display:inline-block;background:#0081c0;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-size:16px;font-weight:500">
+            <a href="${verifyUrl}" style="display:inline-block;background:#d97757;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-size:16px;font-weight:500">
               验证邮箱
             </a>
             <p class="email-hint" style="font-size:13px;margin:24px 0 0">
@@ -91,21 +91,21 @@ export async function sendLoginCodeEmail(
         <style>
           .email-box { background:#1f1f29; border-radius:16px; }
           .email-title { color:#fff; }
-          .email-code-bg { background:rgba(0,129,192,0.1); border:1px solid rgba(0,129,192,0.2); }
+          .email-code-bg { background:rgba(217,119,87,0.1); border:1px solid rgba(217,119,87,0.2); }
           .email-code-label { color:rgba(255,255,255,0.5); }
           .email-code { color:#fff; }
           .email-hint { color:rgba(255,255,255,0.35); }
           @media (prefers-color-scheme: light) {
             .email-box { background:#f8f9fa; border:1px solid #e2e8f0; }
             .email-title { color:#0f172a; }
-            .email-code-bg { background:rgba(0,129,192,0.06); border:1px solid rgba(0,129,192,0.12); }
+            .email-code-bg { background:rgba(217,119,87,0.06); border:1px solid rgba(217,119,87,0.12); }
             .email-code-label { color:rgba(15,23,42,0.5); }
             .email-code { color:#0f172a; }
             .email-hint { color:rgba(15,23,42,0.35); }
           }
         </style></head>
         <body style="margin:0;padding:0">
-        <div style="max-width:480px;margin:0 auto;font-family:system-ui,sans-serif">
+        <div style="max-width:480px;margin:0 auto;font-family:"Noto Serif SC","Source Han Serif SC","Source Han Serif",serif">
           <div class="email-box" style="padding:32px;text-align:center">
             <h1 class="email-title" style="font-size:24px;margin:0 0 16px">liguiyu.com</h1>
             <div class="email-code-bg" style="border-radius:12px;padding:24px;margin:0 0 24px">

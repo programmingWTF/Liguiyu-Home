@@ -52,8 +52,8 @@ export default function StarfieldBackground() {
     const sizeBlue = isDark ? 0.018 : 0.015;
     const sizeWhite = isDark ? 0.012 : 0.01;
 
-    const particlesCyan = createParticles(countCyan, 0x0081c0, sizeCyan);
-    const particlesBlue = createParticles(countBlue, 0x41a1cf, sizeBlue);
+    const particlesCyan = createParticles(countCyan, 0xd97757, sizeCyan);
+    const particlesBlue = createParticles(countBlue, 0xe8957a, sizeBlue);
     const particlesWhite = createParticles(countWhite, isDark ? 0xffffff : 0x666666, sizeWhite);
     scene.add(particlesCyan);
     scene.add(particlesBlue);

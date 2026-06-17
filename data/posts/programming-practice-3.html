@@ -55,9 +55,9 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-2-爬山">题目 2：爬山</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-2">题目要点</h3>
 <p>在一个二维高度数组中，找一条最长的路径，使得路径上的点高度不减（可以相等），且不能重复经过同一个点。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-2">思路解析</h3>
 <p>这是一个带有<strong>记忆化搜索</strong>色彩的 DFS 问题。</p>
 <ul>
 <li>目标：求从任意一点出发的最长路径。</li>
@@ -65,7 +65,7 @@ signed main() {
 <li>虽然题目说可以绕圈，但高度不减且不能重复经过点，实际上限制了路径的增长。</li>
 <li>我们可以对每个点 $(i, j)$ 进行 DFS，求出以它为起点的最长路径长度。</li>
 </ul>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-2">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;algorithm&gt;
 
@@ -113,9 +113,9 @@ int main() {
 </code></pre>
 <hr>
 <h2 id="题目-3-n-皇后">题目 3：N 皇后</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-3">题目要点</h3>
 <p>在 $n \times n$ 棋盘放 $n$ 个皇后，使其互不攻击。输出前 100 个解及总数。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-3">思路解析</h3>
 <p>经典的<strong>回溯法</strong>题目。核心在于判断冲突：</p>
 <ol>
 <li><strong>同行/同列</strong>：通过 DFS 的行递归保证行不冲突，用布尔数组 <code>col[]</code> 保证列不冲突。</li>
@@ -125,7 +125,7 @@ int main() {
 </ul>
 </li>
 </ol>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-3">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 
@@ -164,16 +164,16 @@ int main() {
 </code></pre>
 <hr>
 <h2 id="题目-4-寻径指津">题目 4：寻径指津</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-4">题目要点</h3>
 <p>迷宫寻路，特殊规则：每次移动会一直滑到碰到墙壁为止。求在 $k$ 次移动内到达出口的路径（WASD表示）。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-4">思路解析</h3>
 <p>这是一个<strong>带有步数限制的 DFS</strong>。</p>
 <ul>
 <li>关键点：移动不是走一格，而是“一滑到底”。</li>
 <li>使用 <code>visited[x][y][step]</code> 记录状态，防止在同一移动次数下重复访问同一个点，避免死循环。</li>
 <li>每到一个方向，用 <code>while</code> 循环模拟滑动过程，如果滑动途中经过出口 &#39;E&#39;，则成功。</li>
 </ul>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-4">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
 

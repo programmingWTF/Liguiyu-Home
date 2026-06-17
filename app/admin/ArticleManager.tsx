@@ -6,18 +6,28 @@ import { FileText, Plus, Trash2, Loader2, Eye, CheckCircle, Upload, FileUp } fro
 import Link from "next/link";
 import { marked } from "marked";
 
-// marked v18: 自定义 heading renderer 生成 id（TOC 依赖）
+// 记录当前文档已使用的 heading id，避免重复
+let headingIds = new Map<string, number>();
+function resetHeadingIds() { headingIds = new Map(); }
+
+// marked v18: 自定义 heading renderer 生成 id（TOC 依赖），自动去重
 marked.use({
   renderer: {
     heading({ tokens, depth }: any) {
       const text = (this as any).parser.parseInline(tokens);
-      const id = text
+      const baseId = text
         .toLowerCase()
         .replace(/<[^>]*>/g, "")
         .replace(/[^\w\u4e00-\u9fff]+/g, "-")
         .replace(/-+/g, "-")
         .replace(/^-|-$/g, "");
-      return `<h${depth} id="${id}">${text}</h${depth}>\n`;
+      // 重复 id 追加 -2, -3 ...
+      const count = headingIds.get(baseId) || 0;
+      headingIds.set(baseId, count + 1);
+      const id = count === 0 ? baseId : `${baseId}-${count + 1}`;
+      // heading level +1: 文章页面已有 h1 标题，markdown 的 # 应为 h2
+      const level = Math.min(depth + 1, 6);
+      return `<h${level} id="${id}">${text}</h${level}>\n`;
     },
   },
 });
@@ -53,6 +63,26 @@ function parseFrontMatter(md: string): { meta: Record<string, any>; body: string
     }
   }
   return { meta, body: match[2] };
+}
+
+// ── 保护 LaTeX 公式，避免被 marked 转义其中的 _ & ' < > ──
+function protectMath(md: string): { protected: string; blocks: string[] } {
+  const blocks: string[] = [];
+  // 先保护 $$...$$ 块
+  let out = md.replace(/\$\$([\s\S]*?)\$\$/g, (m) => {
+    blocks.push(m);
+    return `\x00MATH${blocks.length - 1}\x00`;
+  });
+  // 再保护 $...$ 行内公式
+  out = out.replace(/\$([^$\n]+?)\$/g, (m) => {
+    blocks.push(m);
+    return `\x00MATH${blocks.length - 1}\x00`;
+  });
+  return { protected: out, blocks };
+}
+
+function restoreMath(html: string, blocks: string[]): string {
+  return html.replace(/\x00MATH(\d+)\x00/g, (_, i) => blocks[parseInt(i)]);
 }
 
 // ── 从标题/文件名生成 slug ──
@@ -117,13 +147,16 @@ export default function ArticleManager() {
 
       const { meta, body } = parsed;
 
-      // 转换 Markdown → HTML
-      const html = await marked.parse(body, { async: true });
+      // 转换 Markdown → HTML（重置 id 计数器 + 保护 LaTeX 公式）
+      resetHeadingIds();
+      const { protected: protectedMd, blocks } = protectMath(body);
+      const rawHtml = await marked.parse(protectedMd, { async: true });
+      const html = restoreMath(rawHtml, blocks);
 
       // 自动填充表单
       const title = meta.title || file.name.replace(/\.md$/, "");
       setNewTitle(title);
-      setNewSlug(generateSlug(title));
+      setNewSlug(meta.slug || generateSlug(title));
       setNewDate(meta.date ? String(meta.date).slice(0, 10) : new Date().toISOString().slice(0, 10));
       setNewKeywords(Array.isArray(meta.tags) ? meta.tags.join(", ") : (meta.tags || ""));
       setNewAuthor(meta.author || "liguiyu");
@@ -222,8 +255,8 @@ export default function ArticleManager() {
           onClick={() => { setShowForm(!showForm); if (showForm) resetForm(); }}
           className="flex items-center gap-2 px-4 py-2 rounded-[8px] text-[13px] font-[500] border-none cursor-pointer transition-all"
           style={{
-            backgroundColor: showForm ? "rgba(239,68,68,0.1)" : "rgba(0,129,192,0.12)",
-            color: showForm ? "rgba(239,68,68,0.8)" : "#41a1cf",
+            backgroundColor: showForm ? "rgba(239,68,68,0.1)" : "rgba(217,119,87,0.12)",
+            color: showForm ? "rgba(239,68,68,0.8)" : "#e8957a",
             fontFamily: "var(--font-body)",
           }}
         >
@@ -255,8 +288,8 @@ export default function ArticleManager() {
           <div
             className="rounded-[10px] p-5 text-center cursor-pointer transition-all border-2 border-dashed"
             style={{
-              backgroundColor: converting ? "rgba(0,129,192,0.06)" : "rgba(255,255,255,0.02)",
-              borderColor: importFileName ? "rgba(0,129,192,0.3)" : "rgba(255,255,255,0.08)",
+              backgroundColor: converting ? "rgba(217,119,87,0.06)" : "rgba(255,255,255,0.02)",
+              borderColor: importFileName ? "rgba(217,119,87,0.3)" : "rgba(255,255,255,0.08)",
             }}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -269,8 +302,8 @@ export default function ArticleManager() {
             />
             {converting ? (
               <div className="flex items-center justify-center gap-3">
-                <Loader2 size={18} className="animate-spin" color="#41a1cf" />
-                <span className="text-[14px]" style={{ color: "#41a1cf", fontFamily: "var(--font-body)" }}>
+                <Loader2 size={18} className="animate-spin" color="#e8957a" />
+                <span className="text-[14px]" style={{ color: "#e8957a", fontFamily: "var(--font-body)" }}>
                   正在解析 {importFileName}…
                 </span>
               </div>
@@ -288,7 +321,7 @@ export default function ArticleManager() {
               <div className="flex flex-col items-center gap-2">
                 <FileUp size={28} style={{ color: "rgba(255,255,255,0.15)" }} />
                 <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-body)" }}>
-                  点击此处选择 <span style={{ color: "#41a1cf" }}>.md</span> 文件，自动解析 front matter 并转换为 HTML
+                  点击此处选择 <span style={{ color: "#e8957a" }}>.md</span> 文件，自动解析 front matter 并转换为 HTML
                 </span>
               </div>
             )}
@@ -363,7 +396,7 @@ export default function ArticleManager() {
               type="submit"
               disabled={submitting}
               className="flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-[14px] font-[500] border-none cursor-pointer disabled:opacity-40"
-              style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)" }}
+              style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)" }}
             >
               {submitting ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle size={15} />}
               创建文章
@@ -403,7 +436,7 @@ export default function ArticleManager() {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1 max-w-[200px]">
                         {a.keywords?.split(",").slice(0, 3).map((kw) => (
-                          <span key={kw} className="text-[10px] px-1.5 py-0.5 rounded-[4px]" style={{ backgroundColor: "rgba(0,129,192,0.1)", color: "#41a1cf", fontFamily: "var(--font-body)" }}>{kw.trim()}</span>
+                          <span key={kw} className="text-[10px] px-1.5 py-0.5 rounded-[4px]" style={{ backgroundColor: "rgba(217,119,87,0.1)", color: "#e8957a", fontFamily: "var(--font-body)" }}>{kw.trim()}</span>
                         ))}
                       </div>
                     </td>
@@ -411,7 +444,7 @@ export default function ArticleManager() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
                         <Link href={`/blog/${a.slug}`} target="_blank"
-                          className="p-1.5 rounded-[6px] transition-colors hover:bg-[rgba(0,129,192,0.1)]"
+                          className="p-1.5 rounded-[6px] transition-colors hover:bg-[rgba(217,119,87,0.1)]"
                           style={{ color: "rgba(255,255,255,0.2)" }} title="预览">
                           <Eye size={14} />
                         </Link>

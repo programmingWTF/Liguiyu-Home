@@ -106,22 +106,46 @@ function generateSlug(filename: string, title?: string): string {
 // ── Markdown → HTML ──
 async function markdownToHtml(md: string): Promise<string> {
   const { marked } = await import("marked");
-  // marked v18: 自定义 heading renderer 生成 id
+
+  // marked v18: 自定义 heading renderer 生成唯一 id
+  const headingCounts = new Map<string, number>();
   marked.use({
     renderer: {
       heading({ tokens, depth }: any) {
         const text = (this as any).parser.parseInline(tokens);
-        const id = text
+        let baseId = text
           .toLowerCase()
           .replace(/<[^>]*>/g, "")
           .replace(/[^\w\u4e00-\u9fff]+/g, "-")
           .replace(/-+/g, "-")
           .replace(/^-|-$/g, "");
+        // 处理重名：追加数字后缀
+        const count = (headingCounts.get(baseId) || 0) + 1;
+        headingCounts.set(baseId, count);
+        const id = count > 1 ? `${baseId}-${count}` : baseId;
         return `<h${depth} id="${id}">${text}</h${depth}>\n`;
       },
     },
   });
   return marked.parse(md, { async: false }) as string;
+}
+
+// Fix marked v18 CJK delimiter boundary bug:
+// When ** wraps CJK brackets (」》』】) and is sandwiched between non-space chars,
+// marked fails to recognize the ** delimiters, leaving literal ** in HTML.
+// Post-process: replace **...** (outside code blocks) with <strong>.
+function fixUnrenderedBold(html: string): string {
+  // Protect <pre> and <code> blocks so we don't touch ** inside them
+  const blocks: string[] = [];
+  html = html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, (match) => {
+    blocks.push(match);
+    return `\x00BLOCK${blocks.length - 1}\x00`;
+  });
+  // Replace remaining literal **bold** patterns
+  html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+  // Restore protected blocks
+  html = html.replace(/\x00BLOCK(\d+)\x00/g, (_, i) => blocks[parseInt(i)]);
+  return html;
 }
 
 // ── 核心转换 ──
@@ -140,7 +164,8 @@ async function convertOne(filePath: string): Promise<{ slug: string; json: any; 
     : new Date().toISOString().slice(0, 10);
 
   const tags: string[] = meta.tags || [];
-  const html = await markdownToHtml(body);
+  const htmlRaw = await markdownToHtml(body);
+  const html = fixUnrenderedBold(htmlRaw);
 
   const json = {
     slug,

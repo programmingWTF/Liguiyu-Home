@@ -34,7 +34,7 @@ export default function PageGlow() {
           background: useTransform(
             [glowX, glowY],
             ([x, y]: number[]) =>
-              `radial-gradient(600px circle at ${x}% ${y}%, rgba(70,140,210,0.24) 0%, rgba(40,110,190,0.08) 50%, transparent 75%)`
+              `radial-gradient(600px circle at ${x}% ${y}%, rgba(217,119,87,0.24) 0%, rgba(180,90,60,0.08) 50%, transparent 75%)`
           ),
         } as any}
       />

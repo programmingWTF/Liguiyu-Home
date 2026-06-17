@@ -1,18 +1,32 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Fraunces } from "next/font/google";
+import localFont from "next/font/local";
 import Providers from "./components/Providers";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
-const geistMono = Geist_Mono({
+const monaspaceRadonFrozen = localFont({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  src: [
+    {
+      path: "./fonts/MonaspaceRadonFrozen-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MonaspaceRadonFrozen-Italic.ttf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "./fonts/MonaspaceRadonFrozen-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MonaspaceRadonFrozen-BoldItalic.ttf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -36,7 +50,8 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${fraunces.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${monaspaceRadonFrozen.variable} h-full antialiased`}
+      style={{ "--font-display": "Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'PingFang SC', 'Microsoft YaHei', serif", "--font-body": "Georgia, 'Noto Serif SC', 'Source Han Serif SC', 'PingFang SC', 'Microsoft YaHei', serif" } as any}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>

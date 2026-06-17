@@ -199,9 +199,9 @@ signed main() {
 <p>map 会非常“热心”地帮你把这个键新建出来，并给它一个默认值（比如 0）。
 建议：如果你只是想查询而不希望乱改 map，先用 .count() 检查一下，或者使用 .find()。</p>
 <hr>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-2">题目要点</h3>
 <p>对每组样例读取 n 个由小写字母组成的颜色字符串，统计每种颜色出现次数，并按颜色第一次出现的先后顺序输出。</p>
-<h3 id="思路与代码讲解-逐段">思路与代码讲解（逐段）</h3>
+<h3 id="思路与代码讲解-逐段-2">思路与代码讲解（逐段）</h3>
 <ul>
 <li>头文件：</li>
 </ul>
@@ -299,7 +299,7 @@ signed main() {
 <li><strong>排序</strong>：当你把卡片放进 <code>set</code> 时，它会自动按顺序（比如从小到大）帮你摆好。</li>
 </ul>
 <hr>
-<h4 id="2-核心操作">2. 核心操作</h4>
+<h4 id="2-核心操作-2">2. 核心操作</h4>
 <p>使用 <code>set</code> 需要包含头文件 <code>#include &lt;set&gt;</code>。</p>
 <table>
 <thead>
@@ -331,9 +331,9 @@ signed main() {
 </tr>
 </tbody></table>
 <hr>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-3">题目要点</h3>
 <p>给定 N 个整数（范围 1..1000），去重后按升序输出不相同的数字及其个数。</p>
-<h3 id="思路与代码讲解-逐段">思路与代码讲解（逐段）</h3>
+<h3 id="思路与代码讲解-逐段-3">思路与代码讲解（逐段）</h3>
 <ul>
 <li>头文件：</li>
 </ul>
@@ -363,7 +363,7 @@ for (int i = 0; i &lt; n; ++i) {
 for (auto x : s) cout &lt;&lt; x &lt;&lt; &quot; &quot;;
 </code></pre>
 <p><code>set&lt;int&gt;</code> 自动去重并维持有序集合，代码简洁直观。</p>
-<h3 id="参考实现-可复制运行">参考实现（可复制运行）</h3>
+<h3 id="参考实现-可复制运行-2">参考实现（可复制运行）</h3>
 <pre><code class="language-cpp">#include &lt;algorithm&gt;
 #include &lt;iostream&gt;
 #include &lt;set&gt;
@@ -399,7 +399,7 @@ signed main() {
 <li><strong>特殊设置下</strong>：数值最小的元素排在最前面（小顶堆）。</li>
 </ul>
 <hr>
-<h4 id="2-核心操作">2. 核心操作</h4>
+<h4 id="2-核心操作-3">2. 核心操作</h4>
 <p>使用它需要包含头文件 <code>#include &lt;queue&gt;</code>（没错，和普通队列同一个头文件）。</p>
 <table>
 <thead>
@@ -436,7 +436,7 @@ signed main() {
 <li><strong><code>int</code></strong>：告诉它里面装的是整数。</li>
 <li><strong><code>vector&lt;int&gt;</code></strong>：这是“底层容器”。优先队列需要一个地方来存数据，默认就是 <code>vector</code>。这一项通常是固定的。</li>
 <li><strong><code>greater&lt;int&gt;</code></strong>：<strong>这是灵魂！</strong> * 如果不写这一项，默认是 <code>less&lt;int&gt;</code>，即“大的优先”（大顶堆）。<ul>
-<li>写了 <code>greater&lt;int&gt;</code>，就变成了**“小的优先”**（小顶堆）。</li>
+<li>写了 <code>greater&lt;int&gt;</code>，就变成了<strong>“小的优先”</strong>（小顶堆）。</li>
 </ul>
 </li>
 </ol>
@@ -451,9 +451,9 @@ C++里，priority_queue里存在着这样两个定义：</p>
 <p>所以我们为了用规则C来实现小顶堆，就必须用<code>priority_queue&lt; A , B , C &gt;</code>，而B就需要填<code>vector&lt;int&gt;</code></p>
 </blockquote>
 <hr>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-4">题目要点</h3>
 <p>给定若干堆果子，每次合并两堆消耗等于两堆之和，求使总消耗最小的合并顺序的最小代价。</p>
-<h3 id="思路与代码讲解-逐段">思路与代码讲解（逐段）</h3>
+<h3 id="思路与代码讲解-逐段-4">思路与代码讲解（逐段）</h3>
 <ul>
 <li>头文件：</li>
 </ul>
@@ -485,7 +485,7 @@ while (pq.size() &gt; 1) {
 cout &lt;&lt; ans &lt;&lt; endl;
 </code></pre>
 <p>说明：每次合并最小的两堆能使得后续合并的权重也尽可能小，贪心正确。</p>
-<h3 id="参考实现-可复制运行">参考实现（可复制运行）</h3>
+<h3 id="参考实现-可复制运行-3">参考实现（可复制运行）</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;queue&gt;
 #include &lt;vector&gt;
@@ -537,7 +537,7 @@ signed main() {
 <li>除非你把上面的碗都拿走，否则你拿不到最底下的碗。</li>
 </ul>
 <hr>
-<h4 id="2-核心操作">2. 核心操作</h4>
+<h4 id="2-核心操作-4">2. 核心操作</h4>
 <p>使用 <code>stack</code> 需要包含头文件 <code>#include &lt;stack&gt;</code>。</p>
 <table>
 <thead>
@@ -569,9 +569,9 @@ signed main() {
 </tr>
 </tbody></table>
 <hr>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-5">题目要点</h3>
 <p>给定只包含括号的字符串，判断是否为平衡括号序列（例如 <code>()[]</code>、<code>([])</code> 是平衡的）。</p>
-<h3 id="思路与代码讲解-逐段">思路与代码讲解（逐段）</h3>
+<h3 id="思路与代码讲解-逐段-5">思路与代码讲解（逐段）</h3>
 <ul>
 <li>头文件：</li>
 </ul>
@@ -608,7 +608,7 @@ cout &lt;&lt; (st.empty() ? &quot;Yes&quot; : &quot;No&quot;);   // 注意只有
 									   // 若栈不为空则说明还有左括号：( [ { 尚未匹配
 </code></pre>
 <p>说明：每遇到右括号就检查栈顶是否为对应左括号，否则立即返回 <code>No</code>；遍历结束栈为空则 <code>Yes</code>。</p>
-<h3 id="参考实现-可复制运行">参考实现（可复制运行）</h3>
+<h3 id="参考实现-可复制运行-4">参考实现（可复制运行）</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;stack&gt;
 #include &lt;string&gt;
@@ -652,9 +652,9 @@ signed main() {
 <blockquote>
 <p>感觉此题对STL的学习意义不大，大家当作一道思维难度不大但要求多的题随便做做就好</p>
 </blockquote>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-6">题目要点</h3>
 <p>根据 <code>p1,p2,p3</code> 对压缩串中形如 <code>a-c</code> 或 <code>3-7</code> 的片段做展开（填充不同形式、重复次数、顺序控制），并处理若干异常情况（相邻直接删除 <code>-</code>、类型不一致或稳态保留 <code>-</code> 等）。</p>
-<h3 id="思路与代码讲解-逐段">思路与代码讲解（逐段）</h3>
+<h3 id="思路与代码讲解-逐段-6">思路与代码讲解（逐段）</h3>
 <ul>
 <li>程序先读三个参数并读入字符串，然后从左到右逐字符处理：当遇到 <code>-</code> 时，根据其左右字符类型（字母或数字）和 ASCII 比较决定是否执行展开或直接输出 <code>-</code>。</li>
 </ul>
@@ -679,7 +679,7 @@ for (int i = 1; i &lt; (int)s.length(); i++) {
 }
 </code></pre>
 <p>说明：实现细节包括字符到字符之间按 ASCII 遍历并根据 p1/p2/p3 输出不同内容，代码分支较多但逻辑清晰。注意在严格部署到不可信输入时要保证对 <code>s[i+1]</code> 的访问不越界（题目数据通常保证 <code>-</code> 不在首尾）。</p>
-<h3 id="参考实现-可复制运行">参考实现（可复制运行）</h3>
+<h3 id="参考实现-可复制运行-5">参考实现（可复制运行）</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;stack&gt;
 #include &lt;string&gt;

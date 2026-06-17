@@ -77,6 +77,50 @@ function initDb(db: Database.Database) {
     `);
   }
 
+  // ── 智能题库 ──
+  if (!tableNames.has("subjects")) {
+    db.exec(`
+      CREATE TABLE subjects (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        description TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+    `);
+  }
+  if (!tableNames.has("problem_sets")) {
+    db.exec(`
+      CREATE TABLE problem_sets (
+        id TEXT PRIMARY KEY,
+        subject_id TEXT NOT NULL REFERENCES subjects(id),
+        title TEXT NOT NULL,
+        slug TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(subject_id, slug)
+      );
+      CREATE INDEX idx_problem_sets_subject ON problem_sets(subject_id);
+    `);
+  }
+  if (!tableNames.has("problems")) {
+    db.exec(`
+      CREATE TABLE problems (
+        id TEXT PRIMARY KEY,
+        set_id TEXT NOT NULL REFERENCES problem_sets(id),
+        type TEXT NOT NULL DEFAULT 'essay',
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        explanation TEXT DEFAULT '',
+        sort_order INTEGER DEFAULT 0,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX idx_problems_set ON problems(set_id);
+    `);
+  }
+
   const cols = db.prepare("PRAGMA table_info(users)").all() as any[];
   const colNames = new Set(cols.map((c: any) => c.name));
   const migrations: [string, string][] = [
@@ -90,6 +134,14 @@ function initDb(db: Database.Database) {
   for (const [col, def] of migrations) {
     if (!colNames.has(col)) {
       db.exec(`ALTER TABLE users ADD COLUMN ${col} ${def}`);
+    }
+  }
+
+  // Migration: add type column to problems (for existing tables)
+  if (tableNames.has("problems")) {
+    const probCols = db.prepare("PRAGMA table_info(problems)").all() as any[];
+    if (!probCols.some((c: any) => c.name === "type")) {
+      db.exec("ALTER TABLE problems ADD COLUMN type TEXT NOT NULL DEFAULT 'essay'");
     }
   }
 }

@@ -36,21 +36,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden" style={{ backgroundColor: "#0a0f18" }}>
+    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden" style={{ backgroundColor: "#12120f" }}>
       
       {/* 动态发光背景：与首页 PageGlow 相同的游走光晕逻辑 */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0"
              style={{
-               background: "radial-gradient(1000px circle at 50% 50%, rgba(0,129,192,0.12) 0%, transparent 60%)"
+               background: "radial-gradient(1000px circle at 50% 50%, rgba(217,119,87,0.12) 0%, transparent 60%)"
              }} />
       </div>
 
       {/* 蓝色/紫色的悬浮光晕球，增加高级层次感 */}
       <div className="absolute top-[20%] left-[30%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none opacity-40 mix-blend-screen"
-           style={{ background: "#0081c0" }} />
+           style={{ background: "#d97757" }} />
       <div className="absolute bottom-[20%] right-[30%] w-[350px] h-[350px] rounded-full blur-[90px] pointer-events-none opacity-30 mix-blend-screen"
-           style={{ background: "#41a1cf" }} />
+           style={{ background: "#e8957a" }} />
 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -68,7 +68,7 @@ export default function LoginPage() {
             <div className="relative">
               <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "rgba(222,226,222,0.3)" }} />
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="hello@liguiyu.com"
-                className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(0,129,192,0.4)] transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(217,119,87,0.4)] transition-colors"
                 style={{ fontFamily: "var(--font-body)" }} />
             </div>
           </div>
@@ -77,14 +77,14 @@ export default function LoginPage() {
             <div className="relative">
               <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "rgba(222,226,222,0.3)" }} />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(0,129,192,0.4)] transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(217,119,87,0.4)] transition-colors"
                 style={{ fontFamily: "var(--font-body)" }} />
             </div>
           </div>
           {error && <p className="text-[13px] text-red-400 text-center" style={{ fontFamily: "var(--font-body)" }}>{error}</p>}
           <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             className="w-full py-3 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2.5 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(0,129,192,0.3)" }}>
+            style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(217,119,87,0.3)" }}>
             {loading ? (
               <><Loader2 size={18} className="animate-spin" /> 登录中…</>
             ) : (
@@ -93,7 +93,7 @@ export default function LoginPage() {
           </motion.button>
         </form>
         <p className="mt-6 text-center text-[14px]" style={{ fontFamily: "var(--font-body)", color: "rgba(222,226,222,0.4)" }}>
-          还没有账号？ <Link href="/auth/register" className="text-[#41a1cf] hover:text-[#5eb8e6] no-underline transition-colors">注册</Link>
+          还没有账号？ <Link href="/auth/register" className="text-[#e8957a] hover:text-[#edb09c] no-underline transition-colors">注册</Link>
         </p>
       </motion.div>
     </div>

@@ -22,8 +22,8 @@ export default function BackToTop() {
           exit={{ opacity: 0, scale: 0.5 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="fixed right-6 bottom-8 z-50 w-10 h-10 rounded-full flex items-center justify-center border-none cursor-pointer transition-all"
-          style={{ backgroundColor: "rgba(0,129,192,0.2)", border: "1px solid rgba(0,129,192,0.2)", color: "#41a1cf" }}
-          whileHover={{ scale: 1.1, backgroundColor: "rgba(0,129,192,0.35)" }}
+          style={{ backgroundColor: "rgba(217,119,87,0.2)", border: "1px solid rgba(217,119,87,0.2)", color: "#e8957a" }}
+          whileHover={{ scale: 1.1, backgroundColor: "rgba(217,119,87,0.35)" }}
         >
           <ArrowUp size={18} />
         </motion.button>

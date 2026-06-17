@@ -62,7 +62,7 @@ export default function Navbar() {
         style={{
           backgroundColor: showNavBg
             ? isDarkBg
-              ? "rgba(10,15,24,0.94)"
+              ? "rgba(24,22,19,0.94)"
               : "rgba(255,255,255,0.92)"
             : "transparent",
           backdropFilter: showNavBg ? "blur(32px)" : "none",
@@ -85,7 +85,7 @@ export default function Navbar() {
             href="/#hero"
             className="absolute left-6 font-[family-name:var(--font-playfair-display)] text-[18px] font-medium tracking-[-0.01em] no-underline z-10"
             style={{
-              color: useLightText ? "#ffffff" : "#171717",
+              color: useLightText ? "#c2c1b6" : "#4a4840",
               letterSpacing: "-0.18px",
             }}
             whileHover={{ scale: 1.03 }}
@@ -123,11 +123,11 @@ export default function Navbar() {
                   href={link.href}
                   className="relative z-10 px-4 py-[6px] rounded-[8px] text-[15px] font-[500] no-underline transition-colors"
                   style={{
-                    color: useLightText ? "rgba(255,255,255,0.8)" : "#444141",
+                    color: useLightText ? "#d6d5cd" : "#7d7b72",
                     letterSpacing: "-0.18px",
                   }}
                   onMouseEnter={(e) => handleHover(i, e)}
-                  whileHover={{ color: useLightText ? "#ffffff" : "#171717" }}
+                  whileHover={{ color: useLightText ? "#c2c1b6" : "#4a4840" }}
                 >
                   {link.label}
                 </motion.a>
@@ -147,7 +147,7 @@ export default function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 relative z-10"
-            style={{ color: useLightText ? "#ffffff" : "#444141" }}
+            style={{ color: useLightText ? "#c2c1b6" : "#4a4840" }}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -165,7 +165,7 @@ export default function Navbar() {
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-4 top-[72px] z-40 rounded-[14px] backdrop-blur-xl p-4 md:hidden"
             style={{
-              backgroundColor: isDarkBg ? "rgba(20,24,34,0.96)" : "rgba(255,255,255,0.96)",
+              backgroundColor: isDarkBg ? "rgba(28,26,22,0.96)" : "rgba(255,255,255,0.96)",
               boxShadow: isDarkBg ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 12px rgba(0,0,0,0.1)",
             }}
           >
@@ -176,7 +176,7 @@ export default function Navbar() {
                 onClick={() => setMobileOpen(false)}
                 className="block px-3 py-2.5 text-[15px] no-underline rounded-[8px]"
                 style={{
-                  color: isDarkBg ? "#d0d4de" : "#171717",
+                  color: isDarkBg ? "#d6d5cd" : "#4a4840",
                 }}
               >
                 {link.label}
@@ -189,7 +189,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               className="block mt-2 px-4 py-2.5 text-center text-[16px] font-[500] no-underline rounded-[8px]"
               style={{
-                color: isDarkBg ? "#d0d4de" : "#171717",
+                color: isDarkBg ? "#d6d5cd" : "#4a4840",
                 border: isDarkBg ? "1px solid rgba(255,255,255,0.1)" : "1px solid #dee2de",
               }}
             >
@@ -216,7 +216,7 @@ function AuthButton({ useLightText }: { useLightText: boolean }) {
         <span
           className="text-[14px] font-[400] hidden lg:inline"
           style={{
-            color: useLightText ? "rgba(255,255,255,0.6)" : "#646464",
+            color: useLightText ? "#d6d5cd" : "#7d7b72",
             fontFamily: "var(--font-body)",
           }}
         >
@@ -227,7 +227,7 @@ function AuthButton({ useLightText }: { useLightText: boolean }) {
           className="px-3 py-[6px] rounded-[8px] text-[13px] font-[400] border-none cursor-pointer transition-colors"
           style={{
             backgroundColor: useLightText ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
-            color: useLightText ? "rgba(255,255,255,0.6)" : "#646464",
+            color: useLightText ? "#d6d5cd" : "#7d7b72",
             fontFamily: "var(--font-body)",
           }}
         >
@@ -242,17 +242,17 @@ function AuthButton({ useLightText }: { useLightText: boolean }) {
       href="/auth/login"
       className="relative z-10 flex items-center gap-1.5 px-4 py-[6px] rounded-[8px] text-[13px] font-[500] no-underline transition-all ml-1"
       style={{
-        color: useLightText ? "#ffffff" : "#0f172a",
+        color: useLightText ? "#c2c1b6" : "#4a4840",
         fontFamily: "var(--font-body)",
-        backgroundColor: useLightText ? "rgba(0,129,192,0.2)" : "rgba(0,129,192,0.08)",
-        border: useLightText ? "1px solid rgba(0,129,192,0.25)" : "1px solid rgba(0,129,192,0.12)",
+        backgroundColor: useLightText ? "rgba(217,119,87,0.2)" : "rgba(217,119,87,0.08)",
+        border: useLightText ? "1px solid rgba(217,119,87,0.25)" : "1px solid rgba(217,119,87,0.12)",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = useLightText ? "rgba(0,129,192,0.35)" : "rgba(0,129,192,0.15)";
-        e.currentTarget.style.boxShadow = "0 0 16px rgba(0,129,192,0.2)";
+        e.currentTarget.style.backgroundColor = useLightText ? "rgba(217,119,87,0.35)" : "rgba(217,119,87,0.15)";
+        e.currentTarget.style.boxShadow = "0 0 16px rgba(217,119,87,0.2)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = useLightText ? "rgba(0,129,192,0.2)" : "rgba(0,129,192,0.08)";
+        e.currentTarget.style.backgroundColor = useLightText ? "rgba(217,119,87,0.2)" : "rgba(217,119,87,0.08)";
         e.currentTarget.style.boxShadow = "none";
       }}
     >

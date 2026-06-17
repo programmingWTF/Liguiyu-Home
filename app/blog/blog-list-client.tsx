@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X } from "lucide-react";
+import { Search, X, Home } from "lucide-react";
 
 interface PostMeta {
   slug: string;
@@ -28,6 +28,16 @@ export default function BlogListClient({ posts }: { posts: PostMeta[] }) {
 
   return (
     <div className="max-w-[800px] mx-auto">
+      {/* 返回首页 */}
+      <div className="mb-8">
+        <Link href="/" className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-[14px] font-[500] no-underline transition-all"
+          style={{ backgroundColor: "rgba(217,119,87,0.08)", color: "#e8957a", fontFamily: "var(--font-body)", border: "1px solid rgba(217,119,87,0.12)" }}
+          onMouseEnter={e => { e.currentTarget.style.backgroundColor = "rgba(217,119,87,0.15)"; e.currentTarget.style.transform = "translateX(-4px)"; }}
+          onMouseLeave={e => { e.currentTarget.style.backgroundColor = "rgba(217,119,87,0.08)"; e.currentTarget.style.transform = "translateX(0)"; }}>
+          <Home size={15} /> 返回首页
+        </Link>
+      </div>
+
       <h1 className="text-heading text-[36px] font-[500] mb-2" style={{ fontFamily: "var(--font-display)" }}>文章</h1>
       <p className="text-body text-[16px] mb-6" style={{ fontFamily: "var(--font-body)" }}>技术教程、课程解析、踩坑记录</p>
 
@@ -39,9 +49,9 @@ export default function BlogListClient({ posts }: { posts: PostMeta[] }) {
         </div>
         {allTags.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setActiveTag(null)} className="text-[12px] px-3 py-1 rounded-[6px] border-none cursor-pointer transition-all" style={{ backgroundColor: !activeTag ? "rgba(0,129,192,0.15)" : "rgba(128,128,128,0.08)", color: !activeTag ? "#41a1cf" : "var(--color-medium-gray)", fontFamily: "var(--font-body)" }}>全部</button>
+            <button onClick={() => setActiveTag(null)} className="text-[12px] px-3 py-1 rounded-[6px] border-none cursor-pointer transition-all" style={{ backgroundColor: !activeTag ? "rgba(217,119,87,0.15)" : "rgba(128,128,128,0.08)", color: !activeTag ? "#e8957a" : "var(--color-medium-gray)", fontFamily: "var(--font-body)" }}>全部</button>
             {allTags.map((tag) => (
-              <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className="text-[12px] px-3 py-1 rounded-[6px] border-none cursor-pointer transition-all" style={{ backgroundColor: activeTag === tag ? "rgba(0,129,192,0.15)" : "rgba(128,128,128,0.08)", color: activeTag === tag ? "#41a1cf" : "var(--color-medium-gray)", fontFamily: "var(--font-body)" }}>{tag}</button>
+              <button key={tag} onClick={() => setActiveTag(activeTag === tag ? null : tag)} className="text-[12px] px-3 py-1 rounded-[6px] border-none cursor-pointer transition-all" style={{ backgroundColor: activeTag === tag ? "rgba(217,119,87,0.15)" : "rgba(128,128,128,0.08)", color: activeTag === tag ? "#e8957a" : "var(--color-medium-gray)", fontFamily: "var(--font-body)" }}>{tag}</button>
             ))}
           </div>
         )}

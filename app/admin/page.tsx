@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Shield, Users, Trash2, CheckCircle, XCircle, Loader2, ArrowLeft, MessageSquare, FileText } from "lucide-react";
+import { Shield, Users, Trash2, CheckCircle, XCircle, Loader2, ArrowLeft, MessageSquare, FileText, BookOpen } from "lucide-react";
 import Link from "next/link";
 import ArticleManager from "./ArticleManager";
+import ProblemManager from "./ProblemManager";
 
 interface User {
   id: string;
@@ -25,7 +26,7 @@ const isAdminMode = process.env.NEXT_PUBLIC_ADMIN_MODE === "true";
 function PublicAdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [tab, setTab] = useState<"users"|"comments"|"articles">("users");
+  const [tab, setTab] = useState<"users"|"comments"|"articles"|"problems">("users");
   const [comments, setComments] = useState<any[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -135,7 +136,7 @@ function PublicAdminPage() {
 // ==================== 管理模式（无鉴权，Cloudflare Zero Trust 保护） ====================
 
 function AdminModePage() {
-  const [tab, setTab] = useState<"users"|"comments"|"articles">("users");
+  const [tab, setTab] = useState<"users"|"comments"|"articles"|"problems">("users");
   const [comments, setComments] = useState<any[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
@@ -232,8 +233,8 @@ function AdminUI({
   comments, commentsLoading, onDeleteUser, onToggleVerify, onDeleteComment,
 }: {
   headerSub: string;
-  tab: "users" | "comments" | "articles";
-  setTab: (t: "users" | "comments" | "articles") => void;
+  tab: "users" | "comments" | "articles" | "problems";
+  setTab: (t: "users" | "comments" | "articles" | "problems") => void;
   users: User[];
   totalUsers: number;
   verifiedUsers: number;
@@ -254,7 +255,7 @@ function AdminUI({
             </Link>
             <div>
               <h1 className="text-[28px] font-[500] text-white flex items-center gap-3" style={{ fontFamily: "var(--font-display)" }}>
-                <Shield size={24} color="#0081c0" />
+                <Shield size={24} color="#d97757" />
                 管理后台
               </h1>
               <p className="text-[14px] mt-1" style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.4)" }}>
@@ -270,10 +271,11 @@ function AdminUI({
             { key: "users" as const, label: "用户管理", icon: Users },
             { key: "comments" as const, label: "评论管理", icon: MessageSquare },
             { key: "articles" as const, label: "文章管理", icon: FileText },
+            { key: "problems" as const, label: "题库管理", icon: BookOpen },
           ].map((t) => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className="flex items-center gap-2 px-4 py-2 rounded-[10px] text-[14px] font-[500] border-none cursor-pointer transition-all"
-              style={{ backgroundColor: tab === t.key ? "rgba(0,129,192,0.15)" : "rgba(255,255,255,0.04)", color: tab === t.key ? "#41a1cf" : "rgba(255,255,255,0.4)", fontFamily: "var(--font-body)" }}>
+              style={{ backgroundColor: tab === t.key ? "rgba(217,119,87,0.15)" : "rgba(255,255,255,0.04)", color: tab === t.key ? "#e8957a" : "rgba(255,255,255,0.4)", fontFamily: "var(--font-body)" }}>
               <t.icon size={15} />{t.label}
             </button>
           ))}
@@ -320,7 +322,7 @@ function AdminUI({
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-[600] text-white" style={{ backgroundColor: user.role === "admin" ? "rgba(0,129,192,0.25)" : "rgba(255,255,255,0.08)" }}>
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-[600] text-white" style={{ backgroundColor: user.role === "admin" ? "rgba(217,119,87,0.25)" : "rgba(255,255,255,0.08)" }}>
                           {user.name?.[0]?.toUpperCase() || "?"}
                         </div>
                         <span className="text-[14px] font-[500] text-white" style={{ fontFamily: "var(--font-body)" }}>{user.name}</span>
@@ -345,8 +347,8 @@ function AdminUI({
                       <span
                         className="px-2 py-0.5 rounded-[4px] text-[12px] font-[500]"
                         style={{
-                          backgroundColor: user.role === "admin" ? "rgba(0,129,192,0.15)" : "rgba(255,255,255,0.05)",
-                          color: user.role === "admin" ? "#41a1cf" : "rgba(255,255,255,0.4)",
+                          backgroundColor: user.role === "admin" ? "rgba(217,119,87,0.15)" : "rgba(255,255,255,0.05)",
+                          color: user.role === "admin" ? "#e8957a" : "rgba(255,255,255,0.4)",
                           fontFamily: "var(--font-body)",
                         }}
                       >
@@ -411,6 +413,12 @@ function AdminUI({
             </table>
           </div>
           )}
+        </motion.div>
+        )}
+
+        {tab === "problems" && (
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <ProblemManager />
         </motion.div>
         )}
 

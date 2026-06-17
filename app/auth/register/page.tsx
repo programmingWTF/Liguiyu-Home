@@ -68,25 +68,25 @@ export default function RegisterPage() {
     finally { setLoading(false); }
   };
 
-  const inputClass = "w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(0,129,192,0.4)] transition-colors";
+  const inputClass = "w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[15px] text-white placeholder-[rgba(222,226,222,0.25)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(217,119,87,0.4)] transition-colors";
   const labelClass = "block text-[13px] font-[500] mb-1.5";
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden" style={{ backgroundColor: "#0a0f18" }}>
+    <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden" style={{ backgroundColor: "#12120f" }}>
       
       {/* 动态发光背景：与首页 PageGlow 相同的游走光晕逻辑 */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
         <div className="absolute inset-0"
              style={{
-               background: "radial-gradient(1000px circle at 50% 50%, rgba(0,129,192,0.12) 0%, transparent 60%)"
+               background: "radial-gradient(1000px circle at 50% 50%, rgba(217,119,87,0.12) 0%, transparent 60%)"
              }} />
       </div>
 
       {/* 蓝色/紫色的悬浮光晕球，增加高级层次感 */}
       <div className="absolute top-[20%] left-[30%] w-[400px] h-[400px] rounded-full blur-[100px] pointer-events-none opacity-40 mix-blend-screen"
-           style={{ background: "#0081c0" }} />
+           style={{ background: "#d97757" }} />
       <div className="absolute bottom-[20%] right-[30%] w-[350px] h-[350px] rounded-full blur-[90px] pointer-events-none opacity-30 mix-blend-screen"
-           style={{ background: "#41a1cf" }} />
+           style={{ background: "#e8957a" }} />
 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -136,17 +136,17 @@ export default function RegisterPage() {
             <div>
               <label className={labelClass} style={{ color: "rgba(222,226,222,0.6)", fontFamily: "var(--font-body)" }}>邮箱验证码</label>
               <p className="text-[13px] mb-3" style={{ color: "rgba(222,226,222,0.35)", fontFamily: "var(--font-body)" }}>
-                验证码已发送至 <span style={{ color: "#41a1cf" }}>{email}</span>
+                验证码已发送至 <span style={{ color: "#e8957a" }}>{email}</span>
               </p>
               <div className="flex gap-2">
                 <div className="relative flex-1"><Hash size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "rgba(222,226,222,0.3)" }} />
                   <input type="text" value={code} onChange={e => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} required placeholder="6 位数字" maxLength={6}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[20px] tracking-[8px] text-center text-white placeholder-[rgba(222,226,222,0.15)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(0,129,192,0.4)] transition-colors font-mono"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-[10px] text-[20px] tracking-[8px] text-center text-white placeholder-[rgba(222,226,222,0.15)] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] outline-none focus:border-[rgba(217,119,87,0.4)] transition-colors font-mono"
                     style={{ fontFamily: "var(--font-mono)" }} />
                 </div>
                 <motion.button type="button" onClick={sendCode} disabled={sending || countdown > 0} whileTap={{ scale: 0.95 }}
                   className="px-4 py-2.5 rounded-[10px] text-[14px] font-[500] border-none cursor-pointer whitespace-nowrap disabled:opacity-40 transition-all"
-                  style={{ backgroundColor: "rgba(0,129,192,0.15)", color: "#41a1cf", fontFamily: "var(--font-body)" }}>
+                  style={{ backgroundColor: "rgba(217,119,87,0.15)", color: "#e8957a", fontFamily: "var(--font-body)" }}>
                   {sending ? <Loader2 size={15} className="animate-spin" /> : countdown > 0 ? `${countdown}s` : "重新发送"}
                 </motion.button>
               </div>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
 
           <motion.button type="submit" disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
             className="w-full py-3 rounded-[10px] text-[16px] font-[500] flex items-center justify-center gap-2.5 mt-2 disabled:opacity-50 transition-all border-none cursor-pointer"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(0,129,192,0.3)" }}>
+            style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)", boxShadow: "0 0 28px rgba(217,119,87,0.3)" }}>
             {loading ? (
               <><Loader2 size={18} className="animate-spin" /> 注册中…</>
             ) : step === "form" ? (
@@ -174,7 +174,7 @@ export default function RegisterPage() {
         </form>
 
         <p className="mt-6 text-center text-[14px]" style={{ fontFamily: "var(--font-body)", color: "rgba(222,226,222,0.4)" }}>
-          已有账号？ <Link href="/auth/login" className="text-[#41a1cf] hover:text-[#5eb8e6] no-underline transition-colors">登录</Link>
+          已有账号？ <Link href="/auth/login" className="text-[#e8957a] hover:text-[#edb09c] no-underline transition-colors">登录</Link>
         </p>
       </motion.div>
     </div>

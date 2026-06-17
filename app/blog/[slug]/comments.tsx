@@ -72,7 +72,7 @@ export default function BlogComments({ slug }: { slug: string }) {
   return (
     <div>
       <h3 className="text-[18px] font-[500] mb-6 flex items-center gap-2 blog-comment-text" style={{ fontFamily: "var(--font-display)" }}>
-        <MessageCircle size={18} color="#41a1cf" />
+        <MessageCircle size={18} color="#e8957a" />
         评论 ({comments.length})
       </h3>
 
@@ -84,7 +84,7 @@ export default function BlogComments({ slug }: { slug: string }) {
             onChange={(e) => setText(e.target.value)}
             placeholder="写下你的想法..."
             rows={3}
-            className="w-full p-4 rounded-[12px] text-[15px] blog-comment-input outline-none focus:border-[rgba(0,129,192,0.3)] resize-none transition-colors"
+            className="w-full p-4 rounded-[12px] text-[15px] blog-comment-input outline-none focus:border-[rgba(217,119,87,0.3)] resize-none transition-colors"
             style={{ fontFamily: "var(--font-body)" }}
           />
           <div className="flex justify-end mt-2">
@@ -94,7 +94,7 @@ export default function BlogComments({ slug }: { slug: string }) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               className="flex items-center gap-2 px-5 py-2 rounded-[8px] text-[14px] font-[500] border-none cursor-pointer disabled:opacity-40 transition-all"
-              style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)" }}
+              style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)" }}
             >
               {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
               发表
@@ -104,7 +104,7 @@ export default function BlogComments({ slug }: { slug: string }) {
       ) : (
         <div className="mb-8 p-4 rounded-[12px] text-center blog-comment-login">
           <p className="text-[14px] m-0" style={{ fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.35)" }}>
-            <Link href="/auth/login" style={{ color: "#41a1cf" }}>登录</Link> 后即可评论
+            <Link href="/auth/login" style={{ color: "#e8957a" }}>登录</Link> 后即可评论
           </p>
         </div>
       )}
@@ -128,7 +128,7 @@ export default function BlogComments({ slug }: { slug: string }) {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-[600] text-white" style={{ backgroundColor: "rgba(0,129,192,0.2)" }}>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-[600] text-white" style={{ backgroundColor: "rgba(217,119,87,0.2)" }}>
                     {c.user_name?.[0]?.toUpperCase() || "?"}
                   </div>
                   <span className="text-[13px] font-[500] text-white" style={{ fontFamily: "var(--font-body)" }}>{c.user_name}</span>

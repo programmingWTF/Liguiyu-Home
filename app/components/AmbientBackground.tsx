@@ -61,7 +61,7 @@ export default function AmbientBackground() {
           left: "10%",
           borderRadius: "50%",
           background:
-            "radial-gradient(circle, rgba(0,129,192,0.04) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(217,119,87,0.04) 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
       />
@@ -76,7 +76,7 @@ export default function AmbientBackground() {
           left: "60%",
           borderRadius: "50%",
           background:
-            "radial-gradient(circle, rgba(65,161,207,0.035) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(232,149,122,0.035) 0%, transparent 70%)",
           filter: "blur(90px)",
         }}
       />
@@ -91,7 +91,7 @@ export default function AmbientBackground() {
           left: "25%",
           borderRadius: "50%",
           background:
-            "radial-gradient(circle, rgba(0,129,192,0.03) 0%, transparent 70%)",
+            "radial-gradient(circle, rgba(217,119,87,0.03) 0%, transparent 70%)",
           filter: "blur(100px)",
         }}
       />
@@ -101,7 +101,7 @@ export default function AmbientBackground() {
         className="absolute inset-0 opacity-[0.015]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,129,192,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0,129,192,0.3) 1px, transparent 1px)",
+            "linear-gradient(rgba(217,119,87,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(217,119,87,0.3) 1px, transparent 1px)",
           backgroundSize: "100px 100px",
           maskImage:
             "linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)",

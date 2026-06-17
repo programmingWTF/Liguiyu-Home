@@ -9,6 +9,8 @@ import PageGlow from "./components/PageGlow";
 import ClickRipple from "./components/ClickRipple";
 import { getAllPosts } from "./lib/posts";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const posts = getAllPosts();
 

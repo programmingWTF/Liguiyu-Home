@@ -6,6 +6,8 @@ import PageGlow from "@/app/components/PageGlow";
 import ClickRipple from "@/app/components/ClickRipple";
 import BlogListClient from "./blog-list-client";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "博客 · 南航工具箱",
   description: "技术教程、工具体验、踩坑记录",

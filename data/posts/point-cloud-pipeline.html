@@ -1,5 +1,5 @@
 <blockquote>
-<p>本文完整记录了 <code>Point-Cloud-Pipeline-Control</code> 的架构设计思路——一个基于 ImGui + PCL 的交互式点云处理与可视化框架。全文通过设计理念、类层次结构、流水线编排、数据流分析、线程模型、代码重构六个维度，层层拆解这个项目的设计哲学。</p>
+<p>本文完整记录了 <code>Point-Cloud-Pipeline-Control</code> 的架构设计思路——一个基于 ImGui + PCL 的交互式点云处理与可视化框架。全文通过设计理念、类层次结构、流水线编排、数据流分析、线程模型五个维度，层层拆解这个项目的设计哲学。</p>
 </blockquote>
 <hr>
 <blockquote>
@@ -85,9 +85,7 @@ public:
 <blockquote>
 <p><strong>设计权衡</strong>：为什么不是返回新云而是修改指针？因为这样可以<strong>无感地在流水线中传递</strong>——每个步骤处理的都是同一个指针，但指向的数据在不断变化。配合 <code>shared_ptr</code> 的引用计数，旧数据在不再被引用时自动释放。</p>
 </blockquote>
-<blockquote>
-<p><strong>代码优化</strong>：三个 <code>apply()</code> 方法最初各自内嵌了「setInputCloud → filter → 替换指针」的相同代码。重构后抽取了匿名命名空间中的 <code>apply_pcl_filter&lt;T&gt;()</code> 模板函数，三个滤波的 <code>apply()</code> 中只需配置各自的 PCL 参数，然后一行 <code>apply_pcl_filter(filter, cloud)</code> 完成。消除了约 20 行重复代码，且意图更清晰。</p>
-</blockquote>
+<p>三个滤波方法的公共模式「setInputCloud → filter → 替换指针」已通过模板函数 <code>apply_pcl_filter&lt;T&gt;()</code> 统一抽取，消除了重复代码。每个滤波 <code>apply()</code> 只需配置各自独特的 PCL 参数，最后一行调用模板函数完成执行。</p>
 <h3 id="2-2-featurebase-lt-t-gt-特征抽象">2.2 FeatureBase&lt;T&gt;：特征抽象</h3>
 <blockquote>
 <p><strong>相关文件：</strong> <a href="https://github.com/programmingWTF/Point-Cloud-Pipeline-Control/blob/main/include/FeatureBase.hpp"><code>include/FeatureBase.hpp</code></a> 、<a href="https://github.com/programmingWTF/Point-Cloud-Pipeline-Control/blob/main/include/FeatureExtractors.hpp"><code>include/FeatureExtractors.hpp</code></a></p>
@@ -129,11 +127,10 @@ public:
 </tbody></table>
 <p>特征提取与滤波有一个重要区别：<strong>特征提取不修改输入点云，返回新的特征点云。</strong> 也就是说，它负责「附加信息」，而不是「改变数据」。</p>
 <h4 id="法线复用-避免重复计算">法线复用：避免重复计算</h4>
-<p>最初的实现中，<code>CurvatureExtractor::extract()</code> 内部会创建一个 <code>NormalExtractor</code> 来计算法线。这导致当流水线同时包含 ShowNormals 和 ComputeCurvature 时，<strong>法线被完整计算了两次</strong>——这对于大点云是显著的性能浪费。</p>
-<p>重构后引入了法线复用机制：</p>
+<p><code>CurvatureExtractor</code> 支持外部注入法线，避免在流水线中重复计算：</p>
 <pre><code class="language-cpp">class CurvatureExtractor : public FeatureBase&lt;...&gt; {
 public:
-    void setInputNormals(pcl::PointCloud&lt;pcl::Normal&gt;::ConstPtr normals);  // 新增
+    void setInputNormals(pcl::PointCloud&lt;pcl::Normal&gt;::ConstPtr normals);
 };
 </code></pre>
 <ul>
@@ -164,7 +161,7 @@ public:
 ② 调用 execute() 一次性处理
 ③ 调用 getNormals() / getCurvatures() 取出结果
 </code></pre>
-<p><strong>execute() 内部流程（当前版本）：</strong></p>
+<p><strong>execute() 内部流程：</strong></p>
 <pre><code>① 设置 executed_ = true（标记已执行）
 ② 遍历 stages_ → 依次执行每个 filter（每步记录日志：名称+前后点数）
 ③ 如有 normal_extractor_ → 对滤波结果计算法线
@@ -213,7 +210,7 @@ public:
 </code></pre>
 <p><strong>为什么要重建？</strong> 因为在保存之后，已执行的 pipeline 内部状态（法线/曲率）已经被 <code>getNormals()</code> / <code>getCurvatures()</code> 取出了。后面的步骤需要从一个干净的状态重新开始。重建 Pipeline 保证了每一段独立的处理周期都有一个清晰的开始和结束。</p>
 <blockquote>
-<p>这是**「流水线隔离」**原则的具体体现。详细的数据流分析可以看 <a href="https://github.com/programmingWTF/Point-Cloud-Pipeline-Control/blob/main/ARCHITECTURE.md#%E5%9C%BA%E6%99%AF-3%E6%BB%A4%E6%B3%A2%E5%90%8E%E7%89%B9%E5%BE%81%E5%A4%B1%E6%95%88"><code>ARCHITECTURE.md</code></a> 中的场景 3 跟踪。</p>
+<p>这是<strong>「流水线隔离」</strong>原则的具体体现。详细的数据流分析可以看 <a href="https://github.com/programmingWTF/Point-Cloud-Pipeline-Control/blob/main/ARCHITECTURE.md#%E5%9C%BA%E6%99%AF-3%E6%BB%A4%E6%B3%A2%E5%90%8E%E7%89%B9%E5%BE%81%E5%A4%B1%E6%95%88"><code>ARCHITECTURE.md</code></a> 中的场景 3 跟踪。</p>
 </blockquote>
 <hr>
 <h2 id="四-数据流-特征的生命周期">四、数据流：特征的生命周期</h2>
@@ -256,7 +253,39 @@ if (filters_pending_in_pipeline) {
 <p>这个布尔值就像一把「安全锁」：只要滤波执行过，后续的保存操作就只存 XYZ，不再试图合并旧特征。</p>
 <hr>
 <h2 id="五-线程模型与可视化">五、线程模型与可视化</h2>
-<h3 id="5-1-双线程架构">5.1 双线程架构</h3>
+<h3 id="5-1-执行引擎-关注点分离">5.1 执行引擎：关注点分离</h3>
+<p>流水线执行逻辑被封装为独立函数 <code>execute_pipeline_steps()</code>，通过两个结构体传递上下文和结果：</p>
+<pre><code class="language-cpp">// 输入：流水线执行所需的上下文
+struct PipelineExecContext {
+    pcl::PointCloud&lt;pcl::PointXYZ&gt;::Ptr&amp; cloud;  // 会被滤波步骤原地修改
+    const std::string&amp; output_folder;
+    const std::string&amp; current_file_name;
+    std::shared_ptr&lt;ProcessingLog&gt; logger;
+};
+
+// 输出：执行结果
+struct PipelineExecResult {
+    std::vector&lt;VisualizerData::StageSnapshot&gt; snapshots;
+    size_t original_count = 0;
+    size_t final_count = 0;
+};
+
+PipelineExecResult execute_pipeline_steps(
+    const std::vector&lt;PipelineStepConfig&gt;&amp; steps,
+    PipelineExecContext&amp; ctx);
+</code></pre>
+<p>这个函数遍历用户配置的步骤列表，构建 Pipeline 实例，内部通过三个闭包（<code>flush_pending_pipeline</code>、<code>write_step_output</code>、<code>capture_display_snapshot</code>）协调滤波、特征提取、快照截取和文件保存的时序。</p>
+<p><code>main()</code> 中的「执行流水线」按钮回调非常简洁：</p>
+<pre><code class="language-cpp">PipelineExecContext exec_ctx{cloud_to_process, get_output_folder(current_file_path),
+                             current_file_name, logger};
+PipelineExecResult exec_result = execute_pipeline_steps(pipeline_steps, exec_ctx);
+
+vis_data-&gt;stage_snapshots = std::move(exec_result.snapshots);
+vis_data-&gt;should_update = true;
+logger-&gt;log(&quot;CustomPipeline&quot;, exec_result.original_count, exec_result.final_count);
+</code></pre>
+<p>执行引擎可以脱离 GUI 单独调用——这是<strong>可测试性</strong>的前提。</p>
+<h3 id="5-2-双线程架构">5.2 双线程架构</h3>
 <blockquote>
 <p>详细可视化流程见 <a href="https://github.com/programmingWTF/Point-Cloud-Pipeline-Control/blob/main/ARCHITECTURE.md#5-%E5%8F%AF%E8%A7%86%E5%8C%96"><code>ARCHITECTURE.md</code> 可视化章节</a></p>
 </blockquote>
@@ -268,7 +297,7 @@ if (filters_pending_in_pipeline) {
    写入快照                         更新视口
    标记更新                         渲染法线
 </code></pre>
-<p>关键设计：<strong>唯一的共享状态 <code>VisualizerData</code> 用 <code>std::mutex</code> 保护。</strong> 主线程写入快照后设置 <code>should_update = true</code>，Visualizer 线程在下一帧检测到标记后重建场景。在最近的版本中，主线程对 <code>original_display</code> 的读写也纳入了 <code>lock_guard</code> 保护，彻底消除了潜在的 data race。</p>
+<p>关键设计：<strong>唯一的共享状态 <code>VisualizerData</code> 用 <code>std::mutex</code> 保护。</strong> 主线程写入快照后设置 <code>should_update = true</code>，Visualizer 线程在下一帧检测到标记后重建场景。主线程和 Visualizer 线程对共享数据的所有读写操作均在锁内进行，彻底消除 data race。</p>
 <pre><code class="language-cpp">struct VisualizerData {
     std::mutex mutex;
 
@@ -278,7 +307,7 @@ if (filters_pending_in_pipeline) {
     bool should_update = false;
 };
 </code></pre>
-<h3 id="5-2-多视口对比">5.2 多视口对比</h3>
+<h3 id="5-3-多视口对比">5.3 多视口对比</h3>
 <p>每次执行流水线后，Visualizer 线程会根据快照数量动态划分视口：</p>
 <table>
 <thead>
@@ -348,87 +377,14 @@ public:
 <td>自动驾驶数据源</td>
 </tr>
 </tbody></table>
-<p>模板化的 <code>save&lt;T&gt;</code> 可以处理 <code>PointXYZ</code>（纯坐标）、<code>PointNormal</code>（含法线和曲率）等任意点类型，无须为每种类型写一个 save 函数。</p>
-<blockquote>
-<p><strong>健壮性增强</strong>：当前版本的 <code>load()</code> 在文件不存在或路径为空时会提前返回 <code>nullptr</code> 并打印友好错误信息，不再让异常处理承担一切。</p>
-</blockquote>
+<p>模板化的 <code>save&lt;T&gt;</code> 可以处理 <code>PointXYZ</code>（纯坐标）、<code>PointNormal</code>（含法线和曲率）等任意点类型，无须为每种类型写一个 save 函数。<code>load()</code> 在文件不存在或路径为空时会提前返回 <code>nullptr</code> 并打印友好错误信息。</p>
 <h3 id="6-2-logger-结构化日志">6.2 Logger：结构化日志</h3>
 <p>每次操作都会记录到日志文件：</p>
 <pre><code class="language-log">[2026-04-24 15:30:00] Operation: VoxelGridFilter | Pts before: 35947 | Pts after: 8923 | Diff: -27024
 </code></pre>
 <p>日志内容包括时间戳、操作名、处理前后的点数差异——这不仅是调试工具，也是数据处理的实验记录。</p>
 <hr>
-<h2 id="七-代码重构-从-908-行到清晰的架构">七、代码重构：从 908 行到清晰的架构</h2>
-<h3 id="7-1-问题识别">7.1 问题识别</h3>
-<p>经过初版开发和迭代，<code>main.cpp</code> 达到了 <strong>908 行</strong>，成为整个项目中最庞大的单体。其中约有 130 行是流水线执行逻辑——它被嵌入在 ImGui 按钮的回调 lambda 中，包含三个闭包函数（<code>flush_pending_pipeline</code>、<code>write_step_output</code>、<code>capture_display_snapshot</code>）和一个 for 循环。这段代码虽然功能完整，但存在几个问题：</p>
-<ul>
-<li><strong>可测试性为零</strong>：嵌入在 GUI 主循环中，无法独立测试任何执行逻辑</li>
-<li><strong>可读性差</strong>：阅读 <code>main()</code> 时，需要跳过大量低频修改的细节才能理解主流程</li>
-<li><strong>关注点纠缠</strong>：GUI 渲染、文件操作、Pipeline 编排全部混在同一个函数体</li>
-</ul>
-<h3 id="7-2-重构方案">7.2 重构方案</h3>
-<p>将 130 行流水线执行逻辑抽取为独立函数 <code>execute_pipeline_steps()</code>，并通过两个新结构体传递上下文和结果：</p>
-<pre><code class="language-cpp">// 输入：流水线执行所需的上下文
-struct PipelineExecContext {
-    pcl::PointCloud&lt;pcl::PointXYZ&gt;::Ptr&amp; cloud;  // 会被滤波步骤原地修改
-    const std::string&amp; output_folder;
-    const std::string&amp; current_file_name;
-    std::shared_ptr&lt;ProcessingLog&gt; logger;
-};
-
-// 输出：执行结果
-struct PipelineExecResult {
-    std::vector&lt;VisualizerData::StageSnapshot&gt; snapshots;
-    size_t original_count = 0;
-    size_t final_count = 0;
-};
-
-PipelineExecResult execute_pipeline_steps(
-    const std::vector&lt;PipelineStepConfig&gt;&amp; steps,
-    PipelineExecContext&amp; ctx);
-</code></pre>
-<p>重构后，<code>main()</code> 中的「执行流水线」按钮回调从 130 行变为 10 行：</p>
-<pre><code class="language-cpp">PipelineExecContext exec_ctx{cloud_to_process, get_output_folder(current_file_path),
-                             current_file_name, logger};
-PipelineExecResult exec_result = execute_pipeline_steps(pipeline_steps, exec_ctx);
-
-vis_data-&gt;stage_snapshots = std::move(exec_result.snapshots);
-vis_data-&gt;should_update = true;
-logger-&gt;log(&quot;CustomPipeline&quot;, exec_result.original_count, exec_result.final_count);
-</code></pre>
-<h3 id="7-3-同步修复的隐藏问题">7.3 同步修复的隐藏问题</h3>
-<p>在重构过程中，还发现并修复了几个原本隐藏在代码中的问题：</p>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>严重程度</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>线程安全 data race</td>
-<td>高</td>
-<td>主线程修改 <code>original_display</code> 时未加锁，visualizer 线程在锁内读取同一结构体。修复：主线程读写纳入 <code>lock_guard</code></td>
-</tr>
-<tr>
-<td>法线重复计算</td>
-<td>中</td>
-<td><code>CurvatureExtractor</code> 独立计算法线，Pipeline 层面也计算一次。修复：Pipeline 将法线注入曲率提取器</td>
-</tr>
-<tr>
-<td>Columns 布局删除 bug</td>
-<td>低</td>
-<td>删除流水线步骤后 <code>for</code> 循环跳过移位到当前位置的步骤。修复：删除后 <code>--i</code></td>
-</tr>
-<tr>
-<td>PassThrough 参数非法</td>
-<td>低</td>
-<td><code>pass_min &gt;= pass_max</code> 时 PCL 返回空点云但无提示。修复：UI 显示红色警告</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="八-设计原则-七条">八、设计原则（七条）</h2>
+<h2 id="七-设计原则-七条">七、设计原则（七条）</h2>
 <p>回顾整个设计，现在可以用七条原则来概括：</p>
 <h3 id="1-模块化">1. 模块化</h3>
 <p>加新的滤波只需继承 <code>FilterBase</code>，加新的特征只需继承 <code>FeatureBase&lt;T&gt;</code>。滤波的公共「setInputCloud → filter → 替换指针」模式已抽取为 <code>apply_pcl_filter&lt;T&gt;()</code> 模板函数。<strong>不改旧代码，只加新文件。</strong></p>
@@ -443,61 +399,52 @@ logger-&gt;log(&quot;CustomPipeline&quot;, exec_result.original_count, exec_resu
 <h3 id="6-对比友好">6. 对比友好</h3>
 <p>每步显示独立视口，原始点云固定左上角视口，随时对照。PassThrough 步骤的 UI 在 min &gt;= max 时会显示红色警告。</p>
 <h3 id="7-关注点分离">7. 关注点分离</h3>
-<p>流水线执行逻辑已从 <code>main()</code> 中抽取为 <code>execute_pipeline_steps()</code> 独立函数，<code>main()</code> 只负责 UI 渲染和线程管理。这也是<strong>可测试性</strong>的开端——执行引擎可以脱离 GUI 单独调用。</p>
+<p>流水线执行逻辑封装为 <code>execute_pipeline_steps()</code> 独立函数，<code>main()</code> 只负责 UI 渲染和线程管理。执行引擎可脱离 GUI 单独调用和测试。</p>
 <hr>
-<h2 id="九-代码足迹">九、代码足迹</h2>
-<p>项目代码量统计（当前版本）：</p>
+<h2 id="八-代码足迹">八、代码足迹</h2>
+<p>项目代码量统计：</p>
 <table>
 <thead>
 <tr>
 <th>文件</th>
 <th>行数</th>
-<th>占比</th>
 <th>职责</th>
 </tr>
 </thead>
 <tbody><tr>
 <td><code>src/main.cpp</code></td>
 <td>939 行</td>
-<td>74%</td>
 <td>GUI + 流水线执行引擎</td>
 </tr>
 <tr>
 <td><code>src/PointCloudIO.cpp</code></td>
 <td>108 行</td>
-<td>8%</td>
 <td>点云文件 IO</td>
 </tr>
 <tr>
 <td><code>src/FeatureExtractors.cpp</code></td>
 <td>66 行</td>
-<td>5%</td>
 <td>特征提取实现</td>
 </tr>
 <tr>
 <td><code>src/Filters.cpp</code></td>
 <td>60 行</td>
-<td>5%</td>
 <td>滤波实现</td>
 </tr>
 <tr>
 <td><code>src/Pipeline.cpp</code></td>
 <td>55 行</td>
-<td>4%</td>
 <td>流水线编排实现</td>
 </tr>
 <tr>
 <td><code>src/Logger.cpp</code></td>
 <td>43 行</td>
-<td>3%</td>
 <td>日志实现</td>
 </tr>
 </tbody></table>
 <p>连同 <code>include/</code> 的 7 个头文件（174 行），<strong>项目总计 1445 行代码</strong>。</p>
-<p><code>main.cpp</code> 的 939 行较初版增加了 31 行——但这正是「重构没有减少总行数，但提升了结构质量」的典型案例。新增的是独立函数的结构体和文档注释；换来的是 <code>main()</code> 本身更清晰，执行引擎可独立理解、独立测试。</p>
 <hr>
 <h2 id="写在最后">写在最后</h2>
-<p>从 908 行的 monolithic main 到 939 行的清晰分层项目——多了 31 行，换回了七个发现并修复的隐藏问题，以及一个可独立理解的执行引擎。</p>
 <p>这个项目「小」吗？从代码量来看确实小——不到 1500 行业务代码。但它的架构逻辑却把一个完整的处理流程拆解成了「积木块 + 搭积木方式」，从基类设计到流水线编排，从特征生命周期到线程安全，每一层都有清晰的边界和责任。</p>
 <p>对于课程设计来说，这种设计最大的意义不在于写了多少行代码，而在于<strong>展示了什么叫「面向扩展设计」</strong>。当你在 GUI 里添加一个新的滤波类型、一个新的特征提取器时，你会发现，代码结构已经完美处理了新的更改。</p>
 <blockquote>

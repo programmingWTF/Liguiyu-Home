@@ -39,7 +39,7 @@ export default function Blog({ posts }: { posts: PostMeta[] }) {
               >
                 <span className="text-muted text-[13px] font-[500] shrink-0 w-24" style={{ fontFamily: "var(--font-mono)" }}>{post.date}</span>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sub text-[17px] leading-[1.25] tracking-[-0.18px] font-[600] mb-1.5 hover:text-[#0081c0] transition-colors duration-300" style={{ fontFamily: "var(--font-body)" }}>{post.title}</h3>
+                  <h3 className="text-sub text-[17px] leading-[1.25] tracking-[-0.18px] font-[600] mb-1.5 hover:text-[#d97757] transition-colors duration-300" style={{ fontFamily: "var(--font-body)" }}>{post.title}</h3>
                   <p className="text-body text-[15px] leading-[1.5] font-[400] line-clamp-2" style={{ fontFamily: "var(--font-body)" }}>{post.description}</p>
                 </div>
               </Link>
@@ -59,22 +59,22 @@ export default function Blog({ posts }: { posts: PostMeta[] }) {
               className="inline-flex items-center gap-2.5 px-6 py-3 rounded-[12px] text-[15px] font-[500] no-underline transition-all"
               style={{
                 fontFamily: "var(--font-body)",
-                color: "#41a1cf",
-                backgroundColor: "rgba(0,129,192,0.06)",
-                border: "1px solid rgba(0,129,192,0.15)",
+                color: "#e8957a",
+                backgroundColor: "rgba(217,119,87,0.06)",
+                border: "1px solid rgba(217,119,87,0.15)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0,129,192,0.14)";
-                e.currentTarget.style.borderColor = "rgba(0,129,192,0.35)";
-                e.currentTarget.style.boxShadow = "0 0 24px rgba(0,129,192,0.2)";
+                e.currentTarget.style.backgroundColor = "rgba(217,119,87,0.14)";
+                e.currentTarget.style.borderColor = "rgba(217,119,87,0.35)";
+                e.currentTarget.style.boxShadow = "0 0 24px rgba(217,119,87,0.2)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "rgba(0,129,192,0.06)";
-                e.currentTarget.style.borderColor = "rgba(0,129,192,0.15)";
+                e.currentTarget.style.backgroundColor = "rgba(217,119,87,0.06)";
+                e.currentTarget.style.borderColor = "rgba(217,119,87,0.15)";
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               阅读更多文章
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </Link>

@@ -37,7 +37,7 @@ export default function GlobalGrid() {
         style={{
           opacity: 0.12,
           backgroundImage:
-            "linear-gradient(rgba(0,129,192,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(0,129,192,0.25) 1px, transparent 1px)",
+            "linear-gradient(rgba(217,119,87,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(217,119,87,0.25) 1px, transparent 1px)",
           backgroundSize: "60px 60px",
           maskImage:
             "linear-gradient(to bottom, transparent 0%, black 5%, black 92%, transparent 100%)",

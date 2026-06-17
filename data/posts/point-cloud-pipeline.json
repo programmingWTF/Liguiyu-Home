@@ -2,7 +2,7 @@
   "slug": "point-cloud-pipeline",
   "title": "C++程序设计课程设计：一个交互式点云框架的架构设计",
   "date": "2026-04-25",
-  "description": "本文完整记录了 Point-Cloud-Pipeline-Control 的架构设计思路——一个基于 ImGui + PCL 的交互式点云处理与可视化框架。全文通过设计理念、类层次结构、流水线编排、数据流分析、线程模型、代码重构六个维度，层层拆解这个项目的设计哲学。 此程序设计课程设计 GitHub 代码仓库：Point-Cloud-Pipeline-Control …",
-  "keywords": "C++, PCL, 点云, 架构设计, 课程设计, NUAA, ImGui, 流水线模式, 重构",
+  "description": "本文完整记录了 Point-Cloud-Pipeline-Control 的架构设计思路——一个基于 ImGui + PCL 的交互式点云处理与可视化框架。全文通过设计理念、类层次结构、流水线编排、数据流分析、线程模型五个维度，层层拆解这个项目的设计哲学。 此程序设计课程设计 GitHub 代码仓库：Point-Cloud-Pipeline-Control …",
+  "keywords": "C++, PCL, 点云, 架构设计, 课程设计, NUAA, ImGui, 流水线模式",
   "author": "LiGuiyu & 桂鱼养的龙虾🦞"
 }

@@ -35,7 +35,9 @@ export default function ClickRipple() {
         target.closest("#about") ||
         target.closest("#blog") ||
         target.closest("#blog-list") ||
-        target.closest("#blog-post");
+        target.closest("#blog-post") ||
+        target.closest("#quiz") ||
+        target.closest("#problems");
       if (!inSection) return;
       addRipple(e.clientX, e.clientY);
     };
@@ -55,8 +57,8 @@ export default function ClickRipple() {
               top: r.y,
               x: "-50%",
               y: "-50%",
-              border: "1.5px solid rgba(0,129,192,0.5)",
-              boxShadow: "0 0 20px rgba(0,129,192,0.15)",
+              border: "1.5px solid rgba(217,119,87,0.5)",
+              boxShadow: "0 0 20px rgba(217,119,87,0.15)",
             }}
             initial={{ width: 0, height: 0, opacity: 0.7 }}
             animate={{ width: 200, height: 200, opacity: 0 }}

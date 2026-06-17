@@ -74,7 +74,7 @@ function VerifyContent() {
           <Link
             href="/auth/login"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[10px] text-[16px] font-[500] no-underline transition-all hover:scale-105"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)" }}
+            style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)" }}
           >
             去登录 <ArrowRight size={16} />
           </Link>
@@ -82,7 +82,7 @@ function VerifyContent() {
           <Link
             href="/auth/register"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-[10px] text-[16px] font-[500] no-underline transition-all hover:scale-105"
-            style={{ backgroundColor: "#0081c0", color: "#fff", fontFamily: "var(--font-body)" }}
+            style={{ backgroundColor: "#d97757", color: "#fff", fontFamily: "var(--font-body)" }}
           >
             重新注册 <Mail size={16} />
           </Link>

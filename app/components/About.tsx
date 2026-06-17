@@ -22,9 +22,9 @@ const stats = [
 ];
 
 const archLayers = [
-  { label: "同学访问", accent: "#41a1cf", bg: "rgba(65,161,207,0.08)" },
-  { label: "Cloudflare CDN + DNS", accent: "#41a1cf", bg: "rgba(65,161,207,0.12)" },
-  { label: "服务器 · Docker 集群", accent: "#0081c0", bg: "rgba(0,129,192,0.15)" },
+  { label: "同学访问", accent: "#e8957a", bg: "rgba(232,149,122,0.08)" },
+  { label: "Cloudflare CDN + DNS", accent: "#e8957a", bg: "rgba(232,149,122,0.12)" },
+  { label: "服务器 · Docker 集群", accent: "#d97757", bg: "rgba(217,119,87,0.15)" },
 ];
 
 export default function About() {
@@ -42,7 +42,7 @@ export default function About() {
           <p className="text-body text-[18px] leading-[1.45] tracking-[-0.18px] font-[400] mb-8" style={{ fontFamily: "var(--font-body)" }}>
             我希望能用自己学到的技术，给身边的同学带来一点便利。如果你有用得上的功能，或者想一起维护这些工具，欢迎来找我。
           </p>
-          <a href="https://github.com/programmingWTF" target="_blank" rel="noopener noreferrer" className="text-accent inline-flex items-center gap-2 text-[16px] font-[500] no-underline transition-colors hover:text-[#41a1cf]" style={{ fontFamily: "var(--font-body)" }}>
+          <a href="https://github.com/programmingWTF" target="_blank" rel="noopener noreferrer" className="text-accent inline-flex items-center gap-2 text-[16px] font-[500] no-underline transition-colors hover:text-[#e8957a]" style={{ fontFamily: "var(--font-body)" }}>
             GitHub → 查看全部项目
           </a>
         </div>
@@ -91,7 +91,7 @@ export default function About() {
             transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
             className="text-center p-6 rounded-[16px] card-surface-stat"
           >
-            <s.icon size={22} color="#0081c0" className="mx-auto mb-3" />
+            <s.icon size={22} color="#d97757" className="mx-auto mb-3" />
             <div className="text-heading text-[20px] font-[600] mb-1" style={{ fontFamily: "var(--font-display)" }}>{s.value}</div>
             <div className="text-body text-[13px] font-[400]" style={{ fontFamily: "var(--font-body)" }}>{s.label}</div>
           </motion.div>

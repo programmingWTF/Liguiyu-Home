@@ -45,12 +45,15 @@ cd /mnt/d/Code/liguiyu-home && npm run build
 ```bash
 rsync -avz --delete \
   --exclude 'node_modules' --exclude '.next' --exclude '.next-public' \
-  --exclude '.git' --exclude 'data/*.db' --exclude 'data/*.db-*' \
+  --exclude '.git' \
+  --exclude '.env.local' --exclude '.env.production' \
+  --exclude 'data/*.db' --exclude 'data/*.db-*' \
+  --exclude 'data/posts' --exclude 'data/pdfs' \
   /mnt/d/Code/liguiyu-home/ \
   Server:/vol1/1000/Docker/liguiyu-home/
 ```
 
-⚠️ 必须排除 `data/`（数据库）和 `.env`（密钥）。
+⚠️ 必须排除 `.env*`（密钥）、`data/*.db`（数据库）、`data/posts/` 和 `data/pdfs/`（文章/PDF 由 admin 后台直接在服务器上管理，不应被 rsync 覆盖或 --delete 清理）。
 
 ### Step 4: 通知桂鱼重建
 
@@ -79,9 +82,9 @@ sudo docker compose up -d --build
 
 1. **龙虾不能自己重建 Docker**——速度太慢，浪费Tokens，交给桂鱼操作
 2. **每次修改后必须本地 build 验证**——不过不 sync
-3. **rsync 必须排除 data/ 和 .env**——防止覆盖生产数据库和密钥
+3. **rsync 必须排除 data/ 和 .env**——防止覆盖生产数据库、文章文件和密钥
 4. **代码同步后明确告知重建命令**——一句 `ssh Server && cd ... && sudo docker compose up -d --build`
 
 ---
 
-_最后更新：2026-05-14 由龙虾 🦞 记录_
+_最后更新：2025-06-05 由龙虾 🦞 记录_

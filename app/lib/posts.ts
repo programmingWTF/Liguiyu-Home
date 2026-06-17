@@ -12,6 +12,17 @@ export interface PostMeta {
 
 const POSTS_DIR = path.join(process.cwd(), "data", "posts");
 
+/** 给 HTML 中重复的标题 id 追加 -2, -3 后缀，确保每个 id 唯一 */
+function deduplicateHeadingIds(html: string): string {
+  const seen = new Map<string, number>();
+  return html.replace(/<h([2-4])\s(.*?)id="([^"]+)"/gi, (match, level, rest, id) => {
+    const count = seen.get(id) || 0;
+    seen.set(id, count + 1);
+    if (count === 0) return match;
+    return `<h${level} ${rest}id="${id}-${count + 1}"`;
+  });
+}
+
 export function getAllPosts(): PostMeta[] {
   if (!fs.existsSync(POSTS_DIR)) return [];
 
@@ -33,6 +44,7 @@ export function getPostBySlug(slug: string): { meta: PostMeta; html: string } | 
   if (!fs.existsSync(jsonPath) || !fs.existsSync(htmlPath)) return null;
 
   const meta = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as PostMeta;
-  const html = fs.readFileSync(htmlPath, "utf-8");
+  const rawHtml = fs.readFileSync(htmlPath, "utf-8");
+  const html = deduplicateHeadingIds(rawHtml);
   return { meta, html };
 }

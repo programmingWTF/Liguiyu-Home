@@ -29,7 +29,7 @@ export default function ThemeToggle({ isDark }: { isDark: boolean }) {
                   ? "rgba(255,255,255,0.12)"
                   : "rgba(0,0,0,0.06)"
                 : "transparent",
-              color: isDark ? "rgba(255,255,255,0.6)" : "#646464",
+              color: isDark ? "#d6d5cd" : "#7d7b72",
             }}
             title={m.label}
           >
@@ -39,7 +39,7 @@ export default function ThemeToggle({ isDark }: { isDark: boolean }) {
                 layoutId="theme-indicator"
                 className="absolute inset-0 rounded-[6px]"
                 style={{
-                  backgroundColor: isDark ? "rgba(0,129,192,0.25)" : "rgba(0,129,192,0.12)",
+                  backgroundColor: isDark ? "rgba(217,119,87,0.25)" : "rgba(217,119,87,0.12)",
                 }}
                 transition={{ type: "spring", stiffness: 500, damping: 35 }}
               />

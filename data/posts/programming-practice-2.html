@@ -39,9 +39,9 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-1-2-约会">题目 1-2：约会</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-2">题目要点</h3>
 <p>给出一系列项目的开始时间 $l_i$ 和结束时间 $r_i$，一个人不能同时参加两个项目。求最多能参加多少个项目。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-2">思路解析</h3>
 <p>这是经典的<strong>区间调度问题</strong>。
 <strong>贪心策略</strong>：每次选择<strong>结束时间最早</strong>且与当前已选项目不冲突的项目。</p>
 <ol>
@@ -49,7 +49,7 @@ signed main() {
 <li>记录当前项目的结束时间 <code>endtemp</code>。</li>
 <li>遍历排序后的项目，如果某个项目的开始时间 $\ge endtemp$，则参加该项目，并更新 <code>endtemp</code>。</li>
 </ol>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-2">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;algorithm&gt;
 #include &lt;iostream&gt;
 
@@ -83,9 +83,9 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-1-3-魔法篱笆">题目 1-3：魔法篱笆</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-3">题目要点</h3>
 <p>用 $1 \times 2$ 的多米诺骨牌铺满 $2 \times N$ 的区域，求方案数。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-3">思路解析</h3>
 <p>这是一个经典的<strong>斐波那契数列</strong>应用题。
 设 $f(n)$ 为铺满 $2 \times n$ 区域的方案数：</p>
 <ul>
@@ -93,7 +93,7 @@ signed main() {
 <li>最后两块横着放（必须成对出现）：剩下 $2 \times (n-2)$ 区域，方案数 $f(n-2)$。
 所以 $f(n) = f(n-1) + f(n-2)$。初始值 $f(1)=1, f(2)=2$。</li>
 </ul>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-3">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 
 #define int long long
@@ -119,16 +119,16 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-1-4-大葱茗挑战赛">题目 1-4：大葱茗挑战赛</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-4">题目要点</h3>
 <p>有 $n$ 个游戏，每个游戏有截止时间 $t_i$ 和罚款 $w_i$。初始资金 $m$，求剩钱最多的方案（即扣款最少）。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-4">思路解析</h3>
 <p>这也是一个贪心问题。为了扣钱最少，我们要尽量完成<strong>罚款重</strong>的任务。</p>
 <ol>
 <li>将任务按罚款 $w_i$ <strong>从大到小</strong>排序。</li>
 <li>对于每个任务，尝试在它的截止时间 $t_i$ 这一天完成；如果那天占用了，就往前找空档。</li>
 <li>如果从 $t_i$ 到 1 号时间点都被占用了，说明这个任务注定无法完成，扣除相应的 $w_i$。</li>
 </ol>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-4">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;algorithm&gt;
 #include &lt;iostream&gt;
 
@@ -170,15 +170,15 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-1-5-导弹拦截">题目 1-5：导弹拦截</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-5">题目要点</h3>
 <p>拦截导弹系统：第一发高度任意，后续每一发都不能高于前一发。问拦截所有导弹最少需要多少套系统。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-5">思路解析</h3>
 <p>根据 <strong>Dilworth 定理</strong>：</p>
 <ul>
 <li>拦截所有导弹所需的最少系统数 = 该序列的<strong>最长上升子序列 (LIS)</strong> 的长度。
 也可以用贪心理解：每来一个导弹，找一个当前“最低拦截高度”且 $\ge$ 导弹高度的系统去接它；如果所有系统的最低高度都比导弹低，就得新开一套。</li>
 </ul>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-5">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 
@@ -213,9 +213,9 @@ signed main() {
 </code></pre>
 <hr>
 <h2 id="题目-1-6-数字游戏">题目 1-6：数字游戏</h2>
-<h3 id="题目要点">题目要点</h3>
+<h3 id="题目要点-6">题目要点</h3>
 <p>小绿和小黄各有 $n$ 个数的数列。每回合删一个数直到剩下一个。小绿想最大化差的绝对值 $|x-y|$，小黄想最小化它。小绿先手，求最终结果。</p>
-<h3 id="思路解析">思路解析</h3>
+<h3 id="思路解析-6">思路解析</h3>
 <p>博弈论思维：</p>
 <ul>
 <li>小绿控制 $x$，想让 $|x-y|$ 尽量大。</li>
@@ -224,7 +224,7 @@ signed main() {
 所以对于 $a$ 中的每个 $x$，其对应的结果是 $\min |x - b_j|$。
 小绿作为先手且想最大化结果，他会遍历所有的 $x$，选择能让上述“最小值”最大的那个。</li>
 </ul>
-<h3 id="参考实现">参考实现</h3>
+<h3 id="参考实现-6">参考实现</h3>
 <pre><code class="language-cpp">#include &lt;algorithm&gt;
 #include &lt;cmath&gt;
 #include &lt;iostream&gt;

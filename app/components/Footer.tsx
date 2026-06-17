@@ -42,7 +42,7 @@ export default function Footer() {
               <div className="transition-colors duration-300" style={{ color: "rgba(222,226,222,0.5)" }}>
                 <c.icon size={20} />
               </div>
-              <span className="text-[13px] font-[500] transition-colors group-hover:text-[#41a1cf]" style={{ color: "rgba(222,226,222,0.5)" }}>
+              <span className="text-[13px] font-[500] transition-colors group-hover:text-[#e8957a]" style={{ color: "rgba(222,226,222,0.5)" }}>
                 {c.label}
               </span>
             </button>

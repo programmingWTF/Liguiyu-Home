@@ -34,7 +34,7 @@ export default function InteractiveSection({
   const geo2X = useTransform(springX, (v) => -v * 12 + 6);
   const geo2Y = useTransform(springY, (v) => -v * 12 + 6);
 
-  const accent = theme === "observatory" ? "#41a1cf" : "#0081c0";
+  const accent = theme === "observatory" ? "#e8957a" : "#d97757";
 
   // ⚠️ Pre-generate observatory dots on client only
   const [obsDots, setObsDots] = useState<Array<{ w: number; h: number; t: string; l: string; bg: string; o: number }>>([]);
