@@ -37,7 +37,8 @@ export default function ClickRipple() {
         target.closest("#blog-list") ||
         target.closest("#blog-post") ||
         target.closest("#quiz") ||
-        target.closest("#problems");
+        target.closest("#problems") ||
+        target.closest("#league-materials");
       if (!inSection) return;
       addRipple(e.clientX, e.clientY);
     };

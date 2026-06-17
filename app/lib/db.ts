@@ -77,6 +77,29 @@ function initDb(db: Database.Database) {
     `);
   }
 
+  // ── 团日活动资料 ──
+  if (!tableNames.has("league_secretaries")) {
+    db.exec(`
+      CREATE TABLE league_secretaries (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        class_id TEXT NOT NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX idx_league_secretaries_class ON league_secretaries(class_id);
+    `);
+  }
+  if (!tableNames.has("league_material_admins")) {
+    db.exec(`
+      CREATE TABLE league_material_admins (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id),
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX idx_league_material_admins_user ON league_material_admins(user_id);
+    `);
+  }
+
   // ── 智能题库 ──
   if (!tableNames.has("subjects")) {
     db.exec(`

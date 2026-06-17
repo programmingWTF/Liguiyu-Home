@@ -42,18 +42,43 @@ cd /mnt/d/Code/liguiyu-home && npm run build
 
 ### Step 3: 同步到 NAS
 
+> ⚠️ **安全保护**：每次同步前必须先跑 `--dry-run` 确认不会误删，跑完检查输出无误再去掉 `--dry-run` 正式同步。
+
 ```bash
+# 第一步：预演（只显示会改什么，不真的改）
+rsync -avz --dry-run --delete \
+  --exclude 'node_modules' --exclude '.next' --exclude '.next-public' \
+  --exclude '.git' \
+  --exclude '.env.local' --exclude '.env.production' \
+  --exclude 'data/*.db' --exclude 'data/*.db-*' \
+  --exclude 'data/posts' --exclude 'data/pdfs' \
+  --exclude 'data/league-materials' \
+  --exclude 'app/fonts' \
+  /mnt/d/Code/liguiyu-home/ \
+  Server:/vol1/1000/Docker/liguiyu-home/
+
+# 确认预演输出里没有 deleting data/ 之类的东西后，再跑正式的：
 rsync -avz --delete \
   --exclude 'node_modules' --exclude '.next' --exclude '.next-public' \
   --exclude '.git' \
   --exclude '.env.local' --exclude '.env.production' \
   --exclude 'data/*.db' --exclude 'data/*.db-*' \
   --exclude 'data/posts' --exclude 'data/pdfs' \
+  --exclude 'data/league-materials' \
+  --exclude 'app/fonts' \
   /mnt/d/Code/liguiyu-home/ \
   Server:/vol1/1000/Docker/liguiyu-home/
 ```
 
-⚠️ 必须排除 `.env*`（密钥）、`data/*.db`（数据库）、`data/posts/` 和 `data/pdfs/`（文章/PDF 由 admin 后台直接在服务器上管理，不应被 rsync 覆盖或 --delete 清理）。
+**排除说明**（缺一个都会丢生产数据）：
+| 排除项 | 后果 |
+|--------|------|
+| `data/*.db` | 删掉所有用户、评论、团支书名单 |
+| `data/posts/` | 删掉所有博客文章 |
+| `data/pdfs/` | 删掉所有题库 PDF |
+| `data/league-materials/` | 删掉所有团日上传资料 |
+| `.env*` | 泄露密钥 |
+| `app/fonts/` | 每次重传 20MB+ 字体文件（不会丢数据，但浪费时间和带宽） |
 
 ### Step 4: 通知桂鱼重建
 
@@ -82,8 +107,9 @@ sudo docker compose up -d --build
 
 1. **龙虾不能自己重建 Docker**——速度太慢，浪费Tokens，交给桂鱼操作
 2. **每次修改后必须本地 build 验证**——不过不 sync
-3. **rsync 必须排除 data/ 和 .env**——防止覆盖生产数据库、文章文件和密钥
-4. **代码同步后明确告知重建命令**——一句 `ssh Server && cd ... && sudo docker compose up -d --build`
+3. **rsync 先 dry-run 再正式跑**——先 `--dry-run` 看有没有 deleting data/，确认安全再去掉
+4. **rsync 必须排除所有 data/ 和 .env**——缺一个 exclude 就丢生产数据
+5. **代码同步后明确告知重建命令**——一句 `ssh Server && cd ... && sudo docker compose up -d --build`
 
 ---
 

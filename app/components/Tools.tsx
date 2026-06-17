@@ -2,15 +2,15 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Library, Code2, BookOpen, ExternalLink, Wifi, Monitor } from "lucide-react";
+import { Library, Code2, BookOpen, ExternalLink, Monitor, Upload } from "lucide-react";
 import InteractiveSection from "./InteractiveSection";
 
 const tools = [
   { icon: Library, title: "个人博客", desc: "技术教程、课程解析、踩坑记录。从程序设计到 AI 基础设施，我把学到的都写下来。", href: "/blog", label: "阅读文章", accent: "#d97757", status: "已上线" },
-  { icon: BookOpen, title: "智能题库", desc: "分科目刷题，在线作答即时判对错。支持下载习题集 PDF，考试复习不再迷茫。", href: "/problems", label: "开始刷题", accent: "#d97757", status: "已上线" },
+  { icon: Upload, title: "致元书院团日活动资料提交", desc: "每月团日活动资料在线提交，自动归档、自动统计。团支书的好帮手。", href: "/league-materials", label: "进入提交", accent: "#d97757", status: "已上线" },
+  { icon: BookOpen, title: "智能题库", desc: "分科目刷题，在线作答即时判对错。支持下载习题集 PDF，考试复习不再迷茫。", href: "/problems", label: "开始刷题", accent: "#5a6578", status: "调试中" },
   { icon: Code2, title: "云端 VSCode", desc: "浏览器里写代码，走到哪儿都能接着写。不用装环境，打开网页就能跑项目。", href: "#", label: "敬请期待", accent: "#5a6578", status: "开发中" },
   { icon: Library, title: "NUAA 致元书院图书馆", desc: "更快的检索、更清爽的界面。在宿舍就能查书、续借。", href: "#", label: "敬请期待", accent: "#5a6578", status: "开发中" },
-  { icon: Wifi, title: "校园网工具", desc: "一键测速、断网检测、常用网站直达。让校园网上网体验好一点点。", href: "#", label: "敬请期待", accent: "#5a6578", status: "规划中" },
   { icon: Monitor, title: "敬请期待...", desc: "更多南航工具箱正在规划中，期待未来的更新。", href: "#", label: "敬请期待", accent: "#5a6578", status: "规划中" },
 ];
 
